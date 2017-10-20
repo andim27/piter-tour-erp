@@ -33,6 +33,7 @@ if (mix.inProduction()) {
 mix.webpackConfig({
   plugins: [
     // new BundleAnalyzerPlugin(),
+    new webpack.NormalModuleReplacementPlugin(/element-ui[\/\\]lib[\/\\]locale[\/\\]lang[\/\\]zh-CN/, 'element-ui/lib/locale/lang/en'),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',

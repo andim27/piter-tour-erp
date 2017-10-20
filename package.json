@@ -20,6 +20,8 @@
     "sweetalert2": "^6.6.9",
     "vform": "^0.8.1",
     "vue": "^2.4.2",
+    "vue-data-table": "^0.1.1",
+    "vue-data-tables": "^2.1.1",
     "vue-event-bus": "^1.0.2",
     "vue-i18n": "^7.2.0",
     "vue-loader": "^13.0.5",

@@ -1,136 +1,183 @@
 <template>
     <div class="content">
+
+        <el-tabs v-model="activeTabName" @tab-click="handleTabClick">
+            <el-tab-pane label="Users" name="users">
+                <el-row>
+                    <el-col :span="24">
+                        <div class="grid-content bg-purple-dark">
+                            <el-button
+                                    type="primary"
+                                    @click="createNew()">Create new
+                            </el-button>
+                            <el-button
+                                    type="primary"
+                                    @click="checkNewBitrixUser()">B-Sync users
+                            </el-button>
+                        </div>
+                    </el-col>
+
+                </el-row>
+
+                <data-tables :data="items" :table-props="tableProps"  :search-def="searchDef" :actions-def="actionsDef"  :action-col-def="actionColDef" :checkbox-filter-def="checkboxFilterDef">
+                    <!--<el-table-column v-for="title in titles" :prop="title.prop" :label="title.label" :key="title.label" sortable="custom">-->
+                    <el-table-column
+                    label="avatar"
+                    width="120">
+                        <template scope="scope">
+                                <img  v-if="scope.row.photo != ''" class="my-avatar" :src="scope.row.photo"></img>
+                                <img v-else class="my-avatar" src="images/default-avatar.png"></img>
+
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        label="Fio"
+                        width="260">
+                        <template scope="scope">
+                            <el-popover trigger="hover" placement="top">
+                            <p><el-icon name="information" style="display: inline-block;float:left"></el-icon></p>
+                            <p><strong>Id:</strong> {{ scope.row.id }}</p>
+                            <p><strong>B-Id:</strong> {{ scope.row.bitrix_id }}</p>
+                            <p><strong>Name:</strong> {{ scope.row.name }}</p>
+                            <p v-if="scope.row.birthday != ''"><strong>Birthday:</strong> {{ scope.row.birthday}}</p>
+                            <p v-if="scope.row.address != ''"><strong>Address:</strong> {{ scope.row.address}}</p>
+                            <p v-if="scope.row.info != ''"><strong>Info:</strong> {{ scope.row.info}}</p>
+                            <div slot="reference" class="name-wrapper">
+                            <el-tag>{{ scope.row.userfio }}</el-tag>
+                            </div>
+                            </el-popover>
+                        <span style="margin-left: 10px">{{ scope.row.position }}</span>
+                        </template>
+
+                        </el-table-column>
+                        <el-table-column
+                            label="Info"
+                            width="320">
+                            <template scope="scope">
+                                <p>Email: <span class="personal-contact">{{ scope.row.email }}</span></p>
+                                <p v-if="scope.row.skype">Skype: <span class="personal-contact">{{ scope.row.skype }}</span></p>
+                                <p v-if="scope.row.tel">Tel: <span class="personal-contact">{{ scope.row.tel }}</span></p>
+                                <p v-if="scope.row.tel_work">Tel work: <span class="personal-contact">{{ scope.row.tel_work }}</span></p>
+                                <p v-if="scope.row.interests">Interests: <span class="personal-contact">{{ scope.row.interests }}</span></p>
+                                <p>Department: <span class="personal-contact">{{ scope.row.department }}</span></p>
+
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            label="Department"
+                            prop="department"
+                            sortable
+                            width="210">
+                            <template scope="scope">
+                                <el-icon name="document"></el-icon>
+                                <span style="margin-left: 10px">{{ scope.row.department }}</span>
+                                <p v-if="scope.row.head ==1" class="leader-wrap"><span class="leader">Leader</span></p>
+                            </template>
+                        </el-table-column>
+                </data-tables>
+
+            </el-tab-pane>
+            <el-tab-pane label="Company structure" name="departments">
+                <departments></departments>
+
+            </el-tab-pane>
+
+        </el-tabs>
+
         <el-row>
-            <el-col :span="24">
-                <div class="grid-content bg-purple-dark">
-                    <el-radio-group v-model="users_view">
-                        <el-radio-button label="Users"></el-radio-button>
-                        <el-radio-button label="Departments"></el-radio-button>
-                    </el-radio-group>
-            </div>
-            </el-col>
-        </el-row>
-        <el-row>
-            <el-col :span="24">
-                <div class="grid-content bg-purple-dark">
-                <el-button
-                        type="primary"
-                        @click="createNew()">Create new
-                </el-button>
-                <el-button
-                        type="primary"
-                        @click="checkNewBitrixUser()">B-Sync users
-                </el-button>
-                </div>
-            </el-col>
+
+
+            <!--<el-col :span="24">-->
+                <!--<div class="grid-content bg-purple-dark">-->
+                    <!--<el-radio-group v-model="users_view">-->
+                        <!--<el-radio-button label="Users"></el-radio-button>-->
+                        <!--<el-radio-button label="Departments"></el-radio-button>-->
+                    <!--</el-radio-group>-->
+            <!--</div>-->
+            <!--</el-col>-->
+
 
         </el-row>
-    <el-table v-if="users_view =='Users'"
-            :data="items"
-            border
-            style="width: 100%"
-            :row-class-name="tableRowClassName" ref="users-table" >
-        <!--<el-table-column prop="department" label="Dep" width="100" :filters="[{ text: 'Менеджер', value: 'менеджер' }, { text: 'Отдел Бронирования', value: 'Бронирован' }]" :filter-method="filterTag" filter-placement="bottom-end">-->
-        <!--<template scope="scope">-->
-            <!--<el-tag :type="scope.row.department === 'Менеджер' ? 'primary' : 'success'" close-transition>{{scope.row.department}}</el-tag>-->
-        <!--</template>-->
-    <!--</el-table-column>-->
-        <el-table-column
-                label="avatar"
-                width="120">
-            <template scope="scope">
-                <img  v-if="scope.row.photo != ''" class="my-avatar" :src="scope.row.photo"></img>
-                <img v-else class="my-avatar" src="images/default-avatar.png"></img>
-                <!--<img class="my-avatar" :src="scope.row.photo"></img>-->
-            </template>
-        </el-table-column>
-        <el-table-column
-                label="Fio"
-                width="250">
-            <template scope="scope">
-                <el-popover trigger="hover" placement="top">
-                    <p><el-icon name="information" style="display: inline-block;float:left"></el-icon>Id: {{ scope.row.id }}</p>
-                    <p><strong>Name:</strong> {{ scope.row.name }}</p>
-                    <p v-if="scope.row.birthday != ''"><strong>Birthday:</strong> {{ scope.row.birthday}}</p>
-                    <p v-if="scope.row.address != ''"><strong>Address:</strong> {{ scope.row.address}}</p>
-                    <p v-if="scope.row.info != ''"><strong>Info:</strong> {{ scope.row.info}}</p>
-                    <div slot="reference" class="name-wrapper">
-                        <el-tag>{{ scope.row.userfio }}</el-tag>
-                    </div>
-                </el-popover>
-                <span style="margin-left: 10px">{{ scope.row.position }}</span>
-            </template>
 
-        </el-table-column>
+    <!--<el-table v-if="users_view =='Users'"-->
+            <!--:data="items"-->
+            <!--border-->
+            <!--style="width: 100%"-->
+            <!--:row-class-name="tableRowClassName" ref="users-table" >-->
 
-        <el-table-column
-                label="Info"
-                width="300">
-            <template scope="scope">
+        <!--<el-table-column-->
+                <!--label="avatar"-->
+                <!--width="120">-->
+            <!--<template scope="scope">-->
+                <!--<img  v-if="scope.row.photo != ''" class="my-avatar" :src="scope.row.photo"></img>-->
+                <!--<img v-else class="my-avatar" src="images/default-avatar.png"></img>-->
+                <!--&lt;!&ndash;<img class="my-avatar" :src="scope.row.photo"></img>&ndash;&gt;-->
+            <!--</template>-->
+        <!--</el-table-column>-->
+        <!--<el-table-column-->
+                <!--label="Fio"-->
+                <!--width="250">-->
+            <!--<template scope="scope">-->
+                <!--<el-popover trigger="hover" placement="top">-->
+                    <!--<p><el-icon name="information" style="display: inline-block;float:left"></el-icon>Id: {{ scope.row.id }}</p>-->
+                    <!--<p><strong>Name:</strong> {{ scope.row.name }}</p>-->
+                    <!--<p v-if="scope.row.birthday != ''"><strong>Birthday:</strong> {{ scope.row.birthday}}</p>-->
+                    <!--<p v-if="scope.row.address != ''"><strong>Address:</strong> {{ scope.row.address}}</p>-->
+                    <!--<p v-if="scope.row.info != ''"><strong>Info:</strong> {{ scope.row.info}}</p>-->
+                    <!--<div slot="reference" class="name-wrapper">-->
+                        <!--<el-tag>{{ scope.row.userfio }}</el-tag>-->
+                    <!--</div>-->
+                <!--</el-popover>-->
+                <!--<span style="margin-left: 10px">{{ scope.row.position }}</span>-->
+            <!--</template>-->
 
-                <p>Email:<span class="personal-contact">{{ scope.row.email }}</span></p>
+        <!--</el-table-column>-->
 
-                <p v-if="scope.row.skype">Skype:<span class="personal-contact">{{ scope.row.skype }}</span></p>
-                <p v-if="scope.row.tel">Tel:<span class="personal-contact">{{ scope.row.tel }}</span></p>
-                <p v-if="scope.row.tel_work">Tel work:<span class="personal-contact">{{ scope.row.tel_work }}</span></p>
-                <p>Department:<span class="personal-contact">{{ scope.row.department }}</span></p>
+        <!--<el-table-column-->
+                <!--label="Info"-->
+                <!--width="300">-->
+            <!--<template scope="scope">-->
 
-            </template>
-        </el-table-column>
-        <el-table-column
-                label="Department"
-                prop="department"
-                sortable
-                width="180">
-            <template scope="scope">
-                <el-icon name="document"></el-icon>
-                <span style="margin-left: 10px">{{ scope.row.department }}</span>
-            </template>
-        </el-table-column>
+                <!--<p>Email:<span class="personal-contact">{{ scope.row.email }}</span></p>-->
+
+                <!--<p v-if="scope.row.skype">Skype:<span class="personal-contact">{{ scope.row.skype }}</span></p>-->
+                <!--<p v-if="scope.row.tel">Tel:<span class="personal-contact">{{ scope.row.tel }}</span></p>-->
+                <!--<p v-if="scope.row.tel_work">Tel work:<span class="personal-contact">{{ scope.row.tel_work }}</span></p>-->
+                <!--<p>Department:<span class="personal-contact">{{ scope.row.department }}</span></p>-->
+
+            <!--</template>-->
+        <!--</el-table-column>-->
+        <!--<el-table-column-->
+                <!--label="Department"-->
+                <!--prop="department"-->
+                <!--sortable-->
+                <!--width="180">-->
+            <!--<template scope="scope">-->
+                <!--<el-icon name="document"></el-icon>-->
+                <!--<span style="margin-left: 10px">{{ scope.row.department }}</span>-->
+            <!--</template>-->
+        <!--</el-table-column>-->
 
 
 
-        <el-table-column
-                label="Operations">
-            <template scope="scope">
-                <!--<el-button v-if="can('edit')" size="small" type="success" @click="userEdit(scope.$index, scope.row)">-->
-                    <!--Edit-->
+        <!--<el-table-column-->
+                <!--label="Operations">-->
+            <!--<template scope="scope">-->
+                <!--&lt;!&ndash;<el-button v-if="can('edit')" size="small" type="success" @click="userEdit(scope.$index, scope.row)">&ndash;&gt;-->
+                    <!--&lt;!&ndash;Edit&ndash;&gt;-->
+                <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
+                <!--&lt;!&ndash;<el-button v-if="can('delete')" size="small" type="danger"  @click="userDeactivate(scope.$index, scope.row)">&ndash;&gt;-->
+                    <!--&lt;!&ndash;Deactiv&ndash;&gt;-->
+                <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
+                <!--&lt;!&ndash;<el-button size="small" type="info">&ndash;&gt;-->
+                    <!--&lt;!&ndash;Tasks&ndash;&gt;-->
+                <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
+                <!--<el-button size="small" type="info" @click="userBitrixSync(scope.row.id)">-->
+                    <!--B-Sync-->
                 <!--</el-button>-->
-                <!--<el-button v-if="can('delete')" size="small" type="danger"  @click="userDeactivate(scope.$index, scope.row)">-->
-                    <!--Deactiv-->
-                <!--</el-button>-->
-                <!--<el-button size="small" type="info">-->
-                    <!--Tasks-->
-                <!--</el-button>-->
-                <el-button size="small" type="info" @click="userBitrixSync(scope.row.id)">
-                    B-Sync
-                </el-button>
-            </template>
-        </el-table-column>
-    </el-table>
-        <table  v-if="users_view =='Departments' " class="table table-bordered table-hover table-responsive">
-            <thead class="table-head">
-                <th>#</th>
-                <th>Department Name</th>
-                <th v-if="department_items_control.length >0">Controls</th>
-            </thead>
-            <tbody>
-            <tr v-for="item in department_items">
-                <th scope="row">{{item.id}}</th>
-
-                <td>{{item.name}}</td>
-                <td  v-if="department_items_control.length >0" >
-                    <el-button v-if="can_department('edit')" size="small" type="success" @click="departmentEdit(item)">
-                    Edit
-                    </el-button>
-                    <!--<el-button v-if="can_department('delete')" size="small" type="danger"  @click="departmentDeactivate(item)">-->
-                        <!--Deactivate-->
-                    <!--</el-button>-->
-                </td>
-
-            </tr>
-            </tbody>
-        </table>
+            <!--</template>-->
+        <!--</el-table-column>-->
+    <!--</el-table>-->
 
         <!--EDIT  Dialogs-->
         <el-dialog :title="'Edit user: #'+change_user_id" :visible.sync="dialogFormVisible">
@@ -189,22 +236,24 @@
             </span>
         </el-dialog>
         <create-new-dialog ref="createNewDialog" v-bind:type="users_view" v-bind:department_items="department_items" :user_id="change_user_id"></create-new-dialog>
-        <notification></notification>
+        <notify></notify>
  </div>
 </template>
 
 <script>
 
 import axios from 'axios'
-import CreateNewDialog from'~/components/CreateNewDialog'
-import { Notification } from 'element-ui'
 
-import Vue from 'vue'
-Vue.use(Notification)
+import CreateNewDialog from'~/components/CreateNewDialog'
+import departments from'~/pages/departments'
+//import { Notification } from 'element-ui'
+
+//import Vue from 'vue'
+//Vue.use(Notification)
 
 export default {
   components:{
-      CreateNewDialog,Notification
+      CreateNewDialog,departments
   },
   metaInfo () {
     return { title: this.$t('users') }
@@ -241,6 +290,7 @@ export default {
   },
   data() {
     return {
+        activeTabName:'users',
         one_items:[
             {"id":"1","name":"admin.","email":"admin@oltatravel.ru","password":"$2y$10$hPuY\/N0HciCAksgj293gPu6szKPdlsns9IwVCo.zyqZ967RKFY.Ba","remember_token":null,"created_at":null,"updated_at":null,"userfio":"admin","tel":null,"tel_work":null,"skype":null,"position":"admin","department":"admin","info":null,"active":"1"},
         ],
@@ -256,6 +306,64 @@ export default {
             {"id":"9","name":"kseniya.galoc","email":"kseniya.galochkina@oltatravel.ru","password":"$2y$10$hPuY\/N0HciCAksgj293gPu6szKPdlsns9IwVCo.zyqZ967RKFY.Ba","remember_token":null,"created_at":null,"updated_at":null,"userfio":"\u0413\u0430\u043b\u043e\u0447\u043a\u0438\u043d\u0430 \u041a\u0441\u0435\u043d\u0438\u044f","tel":"79111074947","tel_work":null,"skype":"ksenia.galochkina","position":"\u043c\u0435\u043d\u0435\u0434\u0436\u0435\u0440 \u043e\u0442\u0434\u0435\u043b\u0430 \u043f\u0440\u043e\u0434\u0430\u0436","department":"Account","info":null,"active":"1"},
             {"id":"10","name":"stampvita","email":"stampvital@gmail.com","password":"$2y$10$hPuY\/N0HciCAksgj293gPu6szKPdlsns9IwVCo.zyqZ967RKFY.Ba","remember_token":null,"created_at":null,"updated_at":null,"userfio":"\u0414\u043e\u043c\u0438\u043d\u043e\u0432 \u0412\u0438\u0442\u0430\u043b\u0438\u0439","tel":"79119395496","tel_work":null,"skype":"dominov73","position":null,"department":"\u0411\u0443\u0445\u0433\u0430\u043b\u0442\u0435\u0440\u0438\u044f","info":null,"active":"1"}
         ],
+        titles:[
+            {
+                prop: "id",
+                label: "id"
+            }, {
+                prop: "userfio",
+                label: "userfio"
+            }, {
+                prop: "position",
+                label: "position"
+            },{
+                prop: "department",
+                label: "department"
+            }
+        ],
+        tableProps: {
+            defaultSort: {
+                prop: 'id',
+                order: 'descending'
+            }
+        },
+        searchDef: {
+            props: 'userfio',
+            colProps:{
+                span:10,
+                offset:0
+            },
+            inputProps: {
+                placeholder: 'User name search'
+            }
+        },
+        actionColDef: {
+            label: 'Actions',
+            def: [ {
+                icon: 'upload',
+                type: 'text',
+                handler: row => {
+                    //this.$notify('B-sync in row clicked ')
+                    console.log(row);
+                    this.userBitrixSync(row.id);
+                },
+                name: 'B-sync'
+            }]
+        },
+        checkboxFilterDef: {
+            def: [{
+                'code': 1,
+                'name': 'Company'
+            }, {
+                'code': 0,
+                'name': 'Non active'
+            }
+            ],
+            filterFunction(el, filter) {
+                //if (el.name =='All') {return}
+                return el['active'] === filter.vals[0]
+            }
+        },
         department_items: [
             {"id":1,"name":'one'},
             {"id":2,"name":'two'},
@@ -290,6 +398,26 @@ export default {
     }
   },
     methods: {
+        handleTabClick(tab, event) {
+            console.log(tab, event);
+        },
+        actionsDef: {
+            def: [{
+                name: 'new user',
+                handler: () => {
+                    this.$message("new clicked")
+                }
+            }, {
+                name: 'B-sync-users',
+                handler: () => {
+                    this.$message("import clicked")
+                },
+                icon: 'upload',
+                buttonProps: {
+                    type: 'text'
+                }
+            }]
+        },
         tableRowClassName(row, index) {
             if (row.active === 0) {
                 return 'deactive-row';
@@ -555,5 +683,21 @@ export default {
 }
 .personal-contact {
     color:#2067b0;
+}
+.leader-wrap {
+    text-align: left;
+}
+.leader {
+    margin: 10px;
+    border-radius: 5px;
+    background-color: orange;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 17px;
+    margin-top: 3px;
+    min-width: 93px;
+    padding: 2px 7px;
+    text-align: center;
 }
 </style>
