@@ -27,10 +27,10 @@
               <div style="text-align: center"><i class="el-icon-caret-bottom"></i></div></el-col>
       </el-row>
       <el-row :justify="center" :align="top">
-          <el-col :span="16" :offset="4" >
-              <el-tree :data="department_tree" :props="defaultProps" @node-click="handleNodeClick" :render-content="renderTreeContent" ></el-tree>
+          <el-col :span="12" :offset="6" >
+              <el-tree :data="department_tree" :props="defaultProps"  node-key="id" @node-click="handleNodeClick" :render-content="renderTreeContent" ></el-tree>
           </el-col>
-          <el-col :offset="4"></el-col>
+          <el-col :offset="6"></el-col>
       </el-row>
       <!--<table  class="table table-bordered table-hover table-responsive">-->
           <!--<thead class="table-head">-->
@@ -88,9 +88,11 @@ import axios from 'axios'
           department_cur_id:'',
           department_tree:[
               {
+                  id:1,
                   label: 'Отдел маркетинга',
                   dep_type:'dep',
                   children: [{
+                      id:12,
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:1,
@@ -99,20 +101,25 @@ import axios from 'axios'
                       }]
                   }]
               }, {
+                  id:2,
                   label: 'Отдел продаж',
                   dep_type:'dep',
                   children: [{
+                      id:13,
                       label: 'Account',
                       dep_type:'dep',
                       children: [{
+                          id:21,
                           label: 'Сотрудники',
                           dep_type:'users',
                           dep_id:3,
                       }]
                   }, {
+                      id:14,
                       label: 'Sales Development',
                       dep_type:'dep',
                       children: [{
+                          id:22,
                           label: 'Сотрудники',
                           dep_type:'users',
                           dep_id:10,
@@ -122,9 +129,11 @@ import axios from 'axios'
                       }]
                   }]
               }, {
+                  id:3,
                   label: 'Разработка ПО',
                   dep_type:'dep',
                   children: [{
+                      id:15,
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:5,
@@ -136,9 +145,11 @@ import axios from 'axios'
                       ]
                   }]
               }, {
+                  id:4,
                   label: 'Отдел Бронирования',
                   dep_type:'dep',
                   children: [{
+                      id:16,
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:6,
@@ -147,9 +158,11 @@ import axios from 'axios'
                       }]
                   }]
               }, {
+                  id:5,
                   label: 'Бухгалтерия',
                   dep_type:'dep',
                   children: [{
+                      id:17,
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:7,
@@ -159,9 +172,11 @@ import axios from 'axios'
                   }]
 
               }, {
+                  id:6,
                   label: 'Удаленные сотрудники',
                   dep_type:'dep',
                   children: [{
+                      id:18,
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:9,
@@ -174,21 +189,26 @@ import axios from 'axios'
                       ]
                   }]
               }, {
+                  id:7,
                   label: 'MSK OLTA/TF',
                   dep_type:'dep',
                   children: [{
+                      id:19,
                       label: 'TF',
                       dep_type:'dep',
                       dep_id:11,
                       children: [{
+                          id:23,
                           label: 'Сотрудники',
                           dep_type:'users',
                       }]
                   }, {
+                      id:20,
                       label: 'Бухгалтерия MSK',
                       dep_type:'dep',
                       dep_id:11,
                       children: [{
+                          id:24,
                           label: 'Сотрудники',
                           dep_type:'users',
                       }]
@@ -199,16 +219,17 @@ import axios from 'axios'
     },
     methods: {
         handleNodeClick(data) {
-            if (data.dep_type =='users') {
-                let res=this.getDepartmentUsers(data.dep_id);
-                console.log(res);
-
-            }
-            console.log('data.dep_type='+data.dep_type);
-            console.log('data.$treeNodeId='+data.$treeNodeId);
-            if (data.children != undefined) {
-                console.log('data.children.length='+data.children.length);
-            }
+            return;
+//            if (data.dep_type =='users') {
+//                let res=this.getDepartmentUsers(data.dep_id);
+//                console.log(res);
+//
+//            }
+//            console.log('data.dep_type='+data.dep_type);
+//            console.log('data.$treeNodeId='+data.$treeNodeId);
+//            if (data.children != undefined) {
+//                console.log('data.children.length='+data.children.length);
+//            }
 
         },
         async getDepartments(){
@@ -248,7 +269,7 @@ import axios from 'axios'
 
                 //console.log('getUsers'+this.items);
             } catch(e) {
-                this.items=[{'id':1,'name':'error'}];
+                this.department_users=[{'id':1,'name':'error'}];
             }
 
             // Fetch the user.
@@ -265,7 +286,7 @@ import axios from 'axios'
                   <span>
                     <span>
                         <span>{node.label}</span>
-                          <span  style="float: right; margin-right: 20px">
+                          <span  style="float: left; margin-left: 20px">
                               <el-button size="mini" on-click={ () => this.showDepartmentUsers(store, data) }>Show</el-button>
                           </span>
                     </span>
@@ -284,14 +305,21 @@ import axios from 'axios'
 
         },
         showDepartmentUsers(store, data) {
-            if (store.length <=0) {
-                this.getDepartmentUsers(data.department_id).then(function(data) {
-                    for (let i=0;i<this.department_users.length;i++) {
-                        store.append({id:department_users[i]['id'],label:department_users[i]['userfio']})
-                    }
-                });
+            console.log('showDepartmentUsers data.department_id=',data.dep_id);
+            console.log('Tree store.data=',store.data);
+            console.log('Tree store.data.length='+store.data.length);
+            //if (store.data.length >0) {
+                //store=[];
+                let self=this;
+                let data_res=this.getDepartmentUsers(data.dep_id);
+                console.log("getDepartmentUsers done,",data_res);
+                console.log("getDepartmentUsers self.department_users=,",self.department_users);
+                console.log("getDepartmentUsers self.department_users[0]['userfio']=,",self.department_users[0]['userfio']);
+                for (let i=0;i <= self.department_users.length-1;i++) {
+                    store.append({id: data.id++,user_id:self.department_users[i]['id'],dep_type:'user',label:self.department_users[i]['userfio'],children: []})
+                }
 
-            }
+            //}
 
             //store.append({ id: id++, label: 'testtest', children: [] }, data);
         },

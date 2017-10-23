@@ -16,7 +16,7 @@ class Departments extends Controller
 
     protected function getUsers(Request $request) {
         if ($request['department_id']) {
-            $users=User::select('userfio')->where(['department_id'=>$request['department_id']])->get();
+            $users=User::select('id','userfio')->where(['department_id'=>$request['department_id']])->get();
             return $users;
         }
         return ['error'=>'No department_id'];
