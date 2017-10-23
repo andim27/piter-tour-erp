@@ -15,7 +15,7 @@ class UsersController extends Controller
 
     protected function getList(Request $request)
     {
-        $token = $this->guard()->attempt($this->credentials($request));
+        //$token = $this->guard()->attempt($this->credentials($request));
 
         //if ($token) {
         $user = $request->user();

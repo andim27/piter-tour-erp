@@ -237,7 +237,7 @@
             </span>
         </el-dialog>
         <create-new-dialog ref="createNewDialog" v-bind:type="users_view" v-bind:department_items="department_items" :user_id="change_user_id"></create-new-dialog>
-        <notify></notify>
+
  </div>
 </template>
 
@@ -452,7 +452,7 @@ export default {
                 params.append('info', this.form.info);
                 params.append('active', this.form.active?1:0);
 
-                const { data } =  await axios.post('/api/users/update',params,{withCredantial:true});
+                const { data } =  await axios.post('/api/users/update',params,{withCredentials:true});
                 //console.log('Update DATA:',data)
                 if (data.errors != undefined) {
                     console.log("Errors:",data.errors);
@@ -471,7 +471,8 @@ export default {
             //const { data } = await axios({method:'post',url:'/api/users',withcredantial:true});
             console.log('Get users...');
             try {
-            const { data } = await axios.post('/api/users');
+            var params = new URLSearchParams();
+            const { data } = await axios.post('/api/users',params,{withCredantial:true});
 
                 this.items =data.data;
                 this.items_control =data.controls;
@@ -487,7 +488,8 @@ export default {
             console.log('Get departments...');
             //const { data } = await axios({method:'post',url:'/api/users',withcredantial:true});
             try {
-            const { data } = await axios.post('/api/departments');
+            var params = new URLSearchParams();
+            const { data } = await axios.post('/api/departments',params,{withCredantial:true});
 
                 this.department_items =data.data;
                 this.department_items_control =data.controls;
@@ -522,10 +524,7 @@ export default {
         async syncUser(user_id) {
             try {
                 var params = new URLSearchParams();
-
                 params.append('user_id', user_id);
-
-
                 const { data } =  await axios.post('/bitrix/syncUser',params,{withCredantial:true});
                 if (data.error) {
                     console.log("Error:",data.error);

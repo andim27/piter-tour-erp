@@ -28,7 +28,7 @@
       </el-row>
       <el-row :justify="center" :align="top">
           <el-col :span="16" :offset="4" >
-              <el-tree :data="department_tree" :props="defaultProps" @node-click="handleNodeClick"  ></el-tree>
+              <el-tree :data="department_tree" :props="defaultProps" @node-click="handleNodeClick" :render-content="renderTreeContent" ></el-tree>
           </el-col>
           <el-col :offset="4"></el-col>
       </el-row>
@@ -215,7 +215,7 @@ import axios from 'axios'
             console.log('Get departments...');
             //const { data } = await axios({method:'post',url:'/api/users',withcredantial:true});
             try {
-                const { data } = await axios.post('/api/departments');
+                const { data } = await axios.post('/api/departments',{withCredantial:true});
 
                 this.department_items =data.data;
                 this.department_items_control =data.controls;
@@ -259,15 +259,42 @@ import axios from 'axios'
             department_tree=[];
             root_child_arr =this.department_items.map(function(item){if (item.parent==root_item.id) return item;});
         },
-//        renderTreeContent(h, { node, data, store }) {
-//            return (
-//                <span>
-//                    <span>
-//                        <span><strong>{node.label}</strong></span>
-//                    </span>
-//                </span>
-//        )
-//        },
+        renderTreeContent(h, { node, data, store }) {
+          if (data.dep_type=='users') {
+              return (
+                  <span>
+                    <span>
+                        <span>{node.label}</span>
+                          <span  style="float: right; margin-right: 20px">
+                              <el-button size="mini" on-click={ () => this.showDepartmentUsers(store, data) }>Show</el-button>
+                          </span>
+                    </span>
+
+                    </span>
+          );
+          } else {
+              return (
+                  <span>
+                        <span>
+                          <span>{node.label}</span>
+                        </span>
+                    </span>
+          );
+          }
+
+        },
+        showDepartmentUsers(store, data) {
+            if (store.length <=0) {
+                this.getDepartmentUsers(data.department_id).then(function(data) {
+                    for (let i=0;i<this.department_users.length;i++) {
+                        store.append({id:department_users[i]['id'],label:department_users[i]['userfio']})
+                    }
+                });
+
+            }
+
+            //store.append({ id: id++, label: 'testtest', children: [] }, data);
+        },
         departmentEdit(item) {
 
         },
