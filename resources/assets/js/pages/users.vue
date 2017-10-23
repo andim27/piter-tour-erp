@@ -19,32 +19,33 @@
 
                 </el-row>
 
-                <data-tables :data="items" :table-props="tableProps"  :search-def="searchDef" :actions-def="actionsDef"  :action-col-def="actionColDef" :checkbox-filter-def="checkboxFilterDef">
+                <data-tables :data="items" :table-props="tableProps"  :search-def="searchDef"   :action-col-def="actionColDef" :checkbox-filter-def="checkboxFilterDef">
                     <!--<el-table-column v-for="title in titles" :prop="title.prop" :label="title.label" :key="title.label" sortable="custom">-->
                     <el-table-column
                     label="avatar"
                     width="120">
                         <template scope="scope">
-                                <img  v-if="scope.row.photo != ''" class="my-avatar" :src="scope.row.photo"></img>
+                                <img  v-if="scope.row.photo != ''" class="my-avatar" :src="'images/avatar/'+scope.row.avatar"></img>
                                 <img v-else class="my-avatar" src="images/default-avatar.png"></img>
 
                         </template>
                     </el-table-column>
                     <el-table-column
                         label="Fio"
+                        label-class-name="fio-class"
                         width="260">
                         <template scope="scope">
-                            <el-popover trigger="hover" placement="top">
-                            <p><el-icon name="information" style="display: inline-block;float:left"></el-icon></p>
-                            <p><strong>Id:</strong> {{ scope.row.id }}</p>
-                            <p><strong>B-Id:</strong> {{ scope.row.bitrix_id }}</p>
-                            <p><strong>Name:</strong> {{ scope.row.name }}</p>
-                            <p v-if="scope.row.birthday != ''"><strong>Birthday:</strong> {{ scope.row.birthday}}</p>
-                            <p v-if="scope.row.address != ''"><strong>Address:</strong> {{ scope.row.address}}</p>
-                            <p v-if="scope.row.info != ''"><strong>Info:</strong> {{ scope.row.info}}</p>
-                            <div slot="reference" class="name-wrapper">
-                            <el-tag>{{ scope.row.userfio }}</el-tag>
-                            </div>
+                            <el-popover trigger="click" placement="top">
+                                <p><el-icon name="information" style="display: inline-block;float:left"></el-icon></p>
+                                <p><strong>Id:</strong> {{ scope.row.id }}</p>
+                                <p><strong>B-Id:</strong> {{ scope.row.bitrix_id }}</p>
+                                <p><strong>Name:</strong> {{ scope.row.name }}</p>
+                                <p v-if="scope.row.birthday != ''"><strong>Birthday:</strong> {{ scope.row.birthday}}</p>
+                                <p v-if="scope.row.address != ''"><strong>Address:</strong> {{ scope.row.address}}</p>
+                                <p v-if="scope.row.info != ''"><strong>Info:</strong> {{ scope.row.info}}</p>
+                                <div slot="reference" class="name-wrapper">
+                                <el-tag>{{ scope.row.userfio }}</el-tag>
+                                </div>
                             </el-popover>
                         <span style="margin-left: 10px">{{ scope.row.position }}</span>
                         </template>
@@ -405,12 +406,12 @@ export default {
             def: [{
                 name: 'new user',
                 handler: () => {
-                    this.$message("new clicked")
+                    this.$notify({title:"new clicked"})
                 }
             }, {
                 name: 'B-sync-users',
                 handler: () => {
-                    this.$message("import clicked")
+                    this.$notify({title:"import clicked"})
                 },
                 icon: 'upload',
                 buttonProps: {
@@ -685,7 +686,7 @@ export default {
     color:#2067b0;
 }
 .leader-wrap {
-    text-align: left;
+    text-align: center;
 }
 .leader {
     margin: 10px;
@@ -699,5 +700,8 @@ export default {
     min-width: 93px;
     padding: 2px 7px;
     text-align: center;
+}
+.fio-class {
+    cursor:pointer;
 }
 </style>

@@ -70,7 +70,10 @@ export default {
   components: {
         Login
   },
-
+  mounted() {
+        //console.log('Wellcome, notify:',this.$notify);
+        //this.$notify({duration:0});
+  },
   metaInfo () {
     return { title: this.$t('home') }
   },

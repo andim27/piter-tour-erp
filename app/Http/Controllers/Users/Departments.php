@@ -7,11 +7,20 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Validator;
 use App\Department;
+use App\User;
 
 class Departments extends Controller
 {
     //
     use AuthenticatesUsers;
+
+    protected function getUsers(Request $request) {
+        if ($request['department_id']) {
+            $users=User::select('userfio')->where(['department_id'=>$request['department_id']])->get();
+            return $users;
+        }
+        return ['error'=>'No department_id'];
+    }
 
     protected function getList(Request $request) {
 

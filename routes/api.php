@@ -27,6 +27,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::post('/departments','Users\Departments@getList');
     Route::post('/departments/create','Users\Departments@create');
+    Route::post('/departments/getusers','Users\Departments@getUsers');
 
     Route::patch('settings/profile', 'Settings\ProfileController@update');
     Route::patch('settings/password', 'Settings\PasswordController@update');

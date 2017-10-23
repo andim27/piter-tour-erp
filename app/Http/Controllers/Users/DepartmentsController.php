@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Department;
+use App\User;
 
 class DepartmentsController  extends Controller
 {
@@ -34,5 +35,6 @@ class DepartmentsController  extends Controller
 
         return $request->json(['succes'=>false,'data'=>[]]);
     }
+
 }
 

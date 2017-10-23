@@ -8,7 +8,7 @@ import '~/components'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
-import { Button, Popover, Icon, Table, Dialog, Tabs, Notification } from 'element-ui'
+import { Button, Popover, Icon, Table, Dialog, Tabs, Notification, Tree } from 'element-ui'
 import { DataTables } from 'vue-data-tables'
 import  lang  from 'element-ui/lib/locale/lang/en'
 import  locale  from 'element-ui/lib/locale'
@@ -24,6 +24,7 @@ Vue.use(Dialog)
 Vue.use(Tabs)
 Vue.use(Notification)
 Vue.use(DataTables)
+Vue.use(Tree)
 
 var VueEventBus = require('vue-event-bus')
 Vue.use(VueEventBus)
