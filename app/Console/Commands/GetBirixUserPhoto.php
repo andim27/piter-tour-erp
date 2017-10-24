@@ -47,7 +47,7 @@ class GetBirixUserPhoto extends Command
             //$this->info( $part_name_arr[count( $part_name_arr)-1]);
             if (!empty($file_name)) {
                 $path = storage_path();
-                if (File::exists($path.'/bitrix/users/avatar/'.$file_name))
+                if (\File::exists($path.'/bitrix/users/avatar/'.$file_name))
                 {
                     $file_name=$item->id+'_'.$file_name;
                 }

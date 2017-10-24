@@ -15,9 +15,9 @@ class AddTreeFieldsToDepartmentsTable extends Migration
     {
         Schema::table('departments', function (Blueprint $table) {
             //
-            //$table->integer('parent')->unsigned();
+            $table->integer('parent')->unsigned();
             $table->integer('head_user_id')->foreign('head_user_id')->references('id')->on('users');
-            //$table->integer('head_user_name');
+            $table->string('head_user_name');
         });
     }
 

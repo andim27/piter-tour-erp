@@ -35,7 +35,7 @@
                         label-class-name="fio-class"
                         width="260">
                         <template scope="scope">
-                            <el-popover trigger="click" placement="top">
+                            <el-popover trigger="click" placement="top"  style="cursor:pointer">
                                 <p><el-icon name="information" style="display: inline-block;float:left"></el-icon></p>
                                 <p><strong>Id:</strong> {{ scope.row.id }}</p>
                                 <p><strong>B-Id:</strong> {{ scope.row.bitrix_id }}</p>
@@ -44,7 +44,7 @@
                                 <p v-if="scope.row.address != ''"><strong>Address:</strong> {{ scope.row.address}}</p>
                                 <p v-if="scope.row.info != ''"><strong>Info:</strong> {{ scope.row.info}}</p>
                                 <div slot="reference" class="name-wrapper">
-                                <el-tag>{{ scope.row.userfio }}</el-tag>
+                                    <el-tag style="cursor:pointer"><span >{{ scope.row.userfio }}</span></el-tag>
                                 </div>
                             </el-popover>
                         <span style="margin-left: 10px">{{ scope.row.position }}</span>
@@ -657,7 +657,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .el-table .deactive-row {
     background: #f3e3c2;
 }
@@ -704,5 +704,8 @@ export default {
 }
 .fio-class {
     cursor:pointer;
+}
+.my-userfio {
+    cursor:pointer !important;
 }
 </style>
