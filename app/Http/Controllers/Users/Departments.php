@@ -8,24 +8,36 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Validator;
 use App\Department;
 use App\User;
-
+use Log;
 class Departments extends Controller
 {
     //
     use AuthenticatesUsers;
 
     protected function getUsers(Request $request) {
-        if ($request['department_id']) {
-            $users=User::select('id','userfio')->where(['department_id'=>$request['department_id']])->get();
-            return $users;
+        $token = $this->guard()->attempt($this->credentials($request));
+        if (empty($token)) {
+            Log::info("!!! -- Departments/getUsers NO TOKEN -- !!!!!");
         }
+        try {
+            if ($request['department_id']) {
+                Log::info('Department/getUsers department_id='.$request['department_id']);
+                $users=User::select('id','userfio')->where(['department_id'=>$request['department_id']])->get();
+                return $users;
+            }
+        } catch (\Exception $e) {
+            return ['error'=>$e->getMessage()];
+        }
+
         return ['error'=>'No department_id'];
     }
 
     protected function getList(Request $request) {
 
         $token = $this->guard()->attempt($this->credentials($request));
-
+        if (empty($token)) {
+            Log::info("!!! -- Departments/getList NO TOKEN -- !!!!!");
+        }
         $user = $request->user();
         $can_controls=[];
         if ($user->can('update-department')) {

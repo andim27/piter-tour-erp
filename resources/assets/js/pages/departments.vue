@@ -62,7 +62,7 @@
 
 <script >
 import axios from 'axios'
-
+  let workers_id=1000;
   export default  {
     name: 'departments',
     props: [],
@@ -96,9 +96,7 @@ import axios from 'axios'
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:1,
-                      children: [{
-                          label: 'Имя 1-1-1'
-                      }]
+                      children: []
                   }]
               }, {
                   id:2,
@@ -123,9 +121,7 @@ import axios from 'axios'
                           label: 'Сотрудники',
                           dep_type:'users',
                           dep_id:10,
-                          children: [{
-                                label: 'Name-1'
-                          }],
+                          children: [],
                       }]
                   }]
               }, {
@@ -137,11 +133,7 @@ import axios from 'axios'
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:5,
-                      children: [{
-                          label: 'Бабаев Александр'
-                      },{
-                          label: 'AndreyM'
-                      }
+                      children: [
                       ]
                   }]
               }, {
@@ -153,9 +145,7 @@ import axios from 'axios'
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:6,
-                      children: [{
-                          label: 'Имя-1'
-                      }]
+                      children: []
                   }]
               }, {
                   id:5,
@@ -166,9 +156,7 @@ import axios from 'axios'
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:7,
-                      children: [{
-                          label: 'Имя бухгалтер-1'
-                      }]
+                      children: []
                   }]
 
               }, {
@@ -180,12 +168,7 @@ import axios from 'axios'
                       label: 'Сотрудники',
                       dep_type:'users',
                       dep_id:9,
-                      children: [{
-                          label: 'Имя сотрудника-1'
-                      },
-                      {
-                          label: 'Имя сотрудника-2'
-                      }
+                      children: [
                       ]
                   }]
               }, {
@@ -236,7 +219,9 @@ import axios from 'axios'
             console.log('Get departments...');
             //const { data } = await axios({method:'post',url:'/api/users',withcredantial:true});
             try {
-                const { data } = await axios.post('/api/departments',{withCredantial:true});
+                var params = new URLSearchParams();
+                params.token = this.$route.params.token;
+                const { data } = await axios.post('/api/departments',params,{withCredantial:true});
 
                 this.department_items =data.data;
                 this.department_items_control =data.controls;
@@ -248,8 +233,8 @@ import axios from 'axios'
             // Fetch the user.
             //await this.$store.dispatch('fetchDepartments',{departments:data.data});
         },
-        async getDepartmentUsers(department_id){
-            console.log('Get department Users...');
+        async getDepartmentUsers(department_id,store,data){
+            console.log('Get department Users...department_id=',department_id);
             this.department_cur_id =department_id;
             //const { data } = await axios({method:'post',url:'/api/users',withcredantial:true});
             try {
@@ -263,6 +248,15 @@ import axios from 'axios'
                     });
                 } else {
                     this.department_users =data;
+//                    self=this;
+//                    //this.$nextTick(() => {
+//                        let children_arr =[];
+//                        for (let i=0;i <= self.department_users.length-1;i++) {
+//                            children_arr.push({user_id:self.department_users[i]['id'],dep_type:'user',label:self.department_users[i]['userfio']});
+//
+//                        }
+//                        store.append({id: workers_id++,label:'CO-Workers:',children:children_arr},data);
+                    //});
                 }
 
                 return data;
@@ -285,10 +279,8 @@ import axios from 'axios'
               return (
                   <span>
                     <span>
-                        <span>{node.label}</span>
-                          <span  style="float: left; margin-left: 20px">
-                              <el-button size="mini" on-click={ () => this.showDepartmentUsers(store, data) }>Show</el-button>
-                          </span>
+                        <span on-click={ () => this.showDepartmentUsers(store, data) }><strong>{node.label}</strong></span>
+
                     </span>
 
                     </span>
@@ -302,26 +294,33 @@ import axios from 'axios'
                     </span>
           );
           }
-
+// <span  style="float: left; margin-left: 20px">
+//        <el-button size="mini" on-click={ () => this.showDepartmentUsers(store, data) }>Show</el-button>
+//            </span>
         },
         showDepartmentUsers(store, data) {
-            console.log('showDepartmentUsers data.department_id=',data.dep_id);
-            console.log('Tree store.data=',store.data);
-            console.log('Tree store.data.length='+store.data.length);
-            //if (store.data.length >0) {
-                //store=[];
-                let self=this;
-                let data_res=this.getDepartmentUsers(data.dep_id);
-                console.log("getDepartmentUsers done,",data_res);
-                console.log("getDepartmentUsers self.department_users=,",self.department_users);
-                console.log("getDepartmentUsers self.department_users[0]['userfio']=,",self.department_users[0]['userfio']);
+            //console.log('showDepartmentUsers data.department_id=',data.dep_id);
+//            console.log('Tree store=',store);
+//            console.log('Tree data=',data);
+//            console.log("BEFORE: data.users_cnt:",data.users_cnt);
+            if (data.users_cnt != undefined) {
+                //--Was added
+                return;
+            }
+            let self=this;
+
+            this.getDepartmentUsers(data.dep_id).then(function(res) {
+                console.log("THEN:getDepartmentUsers self.department_users=,",self.department_users);
+                let children_arr =[];
                 for (let i=0;i <= self.department_users.length-1;i++) {
-                    store.append({id: data.id++,user_id:self.department_users[i]['id'],dep_type:'user',label:self.department_users[i]['userfio'],children: []})
+                    children_arr.push({user_id:self.department_users[i]['id'],dep_type:'user',label:self.department_users[i]['userfio']});
                 }
+                data.users_cnt=self.department_users.length;
+                for (let i=0;i <= children_arr.length-1;i++) {
+                    store.append({id: workers_id++,dep_type:'user',label:children_arr[i]['label'],children:[]},data);
+                }
+            });
 
-            //}
-
-            //store.append({ id: id++, label: 'testtest', children: [] }, data);
         },
         departmentEdit(item) {
 

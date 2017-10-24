@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\User;//---my---
 use App\Department;//---my---
-
+use Log;
 class UsersController extends Controller
 {
     //
@@ -15,8 +15,10 @@ class UsersController extends Controller
 
     protected function getList(Request $request)
     {
-        //$token = $this->guard()->attempt($this->credentials($request));
-
+        $token = $this->guard()->attempt($this->credentials($request));
+//        if (empty($token)) {
+//           Log::info("!!! -- UsersController/getList NO TOKEN -- !!!!!");
+//        }
         //if ($token) {
         $user = $request->user();
         $can_controls=[];

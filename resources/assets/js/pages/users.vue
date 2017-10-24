@@ -472,6 +472,7 @@ export default {
             console.log('Get users...');
             try {
             var params = new URLSearchParams();
+            params.token = this.$route.params.token;
             const { data } = await axios.post('/api/users',params,{withCredantial:true});
 
                 this.items =data.data;
@@ -489,6 +490,7 @@ export default {
             //const { data } = await axios({method:'post',url:'/api/users',withcredantial:true});
             try {
             var params = new URLSearchParams();
+            params.token = this.$route.params.token;
             const { data } = await axios.post('/api/departments',params,{withCredantial:true});
 
                 this.department_items =data.data;
