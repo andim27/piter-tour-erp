@@ -6,6 +6,7 @@ export default ({ authGuard, guestGuard }) => [
     { path: '/home', name: 'home', component: require('~/pages/home.vue') },
     { path: '/users', name: 'users', component: require('~/pages/users.vue') },
     { path: '/departments', name: 'departments', component: require('~/pages/users.vue') },
+    { path: '/booking', name: 'booking', component: require('~/pages/booking.vue') },
     { path: '/settings', component: require('~/pages/settings/index.vue'), children: [
       { path: '', redirect: { name: 'settings.profile' }},
       { path: 'profile', name: 'settings.profile', component: require('~/pages/settings/profile.vue') },
