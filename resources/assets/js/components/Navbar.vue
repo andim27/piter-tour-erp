@@ -45,7 +45,7 @@
                                                   <div v-for="(item,index) in popoverItems" class="col col-6 col-padding-15" >
                                                       <div class="card text-center" @click="clickListApps(index)">
                                                           <h6 class="card-title">
-                                                              {{item.name}}
+                                                              {{item.label}}
                                                           </h6>
                                                           <div class="card-block" >
                                                               <img class="img-app" v-bind:src="'/images/'+item.img"

@@ -31,12 +31,12 @@ Vue.use(VueEventBus)
 
 Vue.config.productionTip = false
 window.config.appItems = [
-    { name: 'Users', img: 'users.png', url: 'users' },
-    { name: 'Leads', img: 'leads.png', url: 'leads' },
-    { name: 'Deals', img: 'deals.png', url: 'deals' },
-    { name: 'Tasks', img: 'tasks.png', url: 'tasks' },
-    { name: 'Reports', img: 'reports.png', url: 'reports' },
-    { name: 'Reserve', img: 'reserve.png', url: 'reserve' }
+    { name: 'Users', label:'Company', img: 'users.png', url: 'users' },
+    { name: 'Leads', label:'Leads', img: 'leads.png', url: 'leads' },
+    { name: 'Deals', label:'Deals', img: 'deals.png', url: 'deals' },
+    { name: 'Tasks', label:'Tasks', img: 'tasks.png', url: 'tasks' },
+    { name: 'Reports', label:'Reports', img: 'reports.png', url: 'reports' },
+    { name: 'Booking', label:'Booking', img: 'reserve.png', url: 'booking' }
 ]
 new Vue({
   i18n,

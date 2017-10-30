@@ -6,7 +6,7 @@
               <router-link :to="{ name: item.url }">
                   <div class="card text-center">
                       <div class="card-header">
-                          {{item.name}}
+                          {{item.label}}
                       </div>
                       <div class="card-block">
                           <!--<img class="card-img-top" v-bind:src="'../../icons/'+item.img" v-bind:alt="item.name">-->
