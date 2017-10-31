@@ -31,7 +31,12 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::patch('settings/profile', 'Settings\ProfileController@update');
     Route::patch('settings/password', 'Settings\PasswordController@update');
+
+
+    Route::post('/tours','Tours\TourController@index');
+    Route::post('/tours/create-q','Tours\TourController@createByQuotation');
 });
+//Route::resource('api/tours', 'Tours\TourController');
 
 
 Route::group(['middleware' => 'guest:api'], function () {
