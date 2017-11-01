@@ -16,20 +16,20 @@ class CreateToursTable extends Migration
         Schema::create('tours', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('ext_q_id');//---quotation id from rfq (external id)---
-            $table->string('tour_name');
-            $table->string('client_name');
-            $table->string('people');
-            $table->string('cities_str');
-            $table->unsignedInteger('nights');
-            $table->string('sales_user_name');
-            $table->string('booking_user_name');
-            $table->string('comment');
-            $table->string('currency_type_str');
-            $table->float('currency_kurs',10,2);
-            $table->integer('price');
-            $table->date('work_date'); //--input by hand from UI
-            $table->date('date_from');
-            $table->date('date_to');
+            $table->string('tour_name')->nullable();
+            $table->string('client_name')->nullable();
+            $table->string('people')->nullable();
+            $table->string('cities_str')->nullable();
+            $table->unsignedInteger('nights')->nullable();
+            $table->string('sales_user_name')->nullable();
+            $table->string('booking_user_name')->nullable();
+            $table->string('comment')->nullable();
+            $table->string('currency_type_str')->nullable();
+            $table->float('currency_kurs',10,2)->nullable();
+            $table->integer('price')->nullable();
+            $table->date('work_date')->nullable(); //--input by hand from UI
+            $table->date('date_from')->nullable();
+            $table->date('date_to')->nullable();
             $table->timestamps();
         });
     }
