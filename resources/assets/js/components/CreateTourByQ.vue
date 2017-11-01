@@ -9,7 +9,7 @@
           <div class="container">
               <form @submit.prevent="createNew" @keydown="form.onKeydown($event)">
                   <alert-success :form="form" :message="$t('created')"></alert-success>
-                  <alert-error :form="form" message="Error from external source.May be problem with your input."></alert-error>
+                  <alert-error :form="form" :message="error_message"></alert-error>
                   <!-- Quotation number -->
                   <div class="form-group row">
                       <label class="col-md-3 col-form-label text-md-right">Quotation N:</label>
@@ -22,7 +22,7 @@
 
                       <!-- people -->
                       <div class="form-group row">
-                          <label class="col-md-3 col-form-label text-md-right">People:</label>
+                          <label class="col-md-3 col-form-label text-md-right">PAX:</label>
                           <div class="col-md-7">
                               <input v-model="form.people" type="text" name="people" class="form-control"
                                      :class="{ 'is-invalid': form.errors.has('people') }">
@@ -32,11 +32,12 @@
                       <!-- Date -->
                       <div class="form-group row">
                           <label class="col-md-3 col-form-label text-md-right">Date:</label>
-                          <div class="my-date-wrappper">
+                          <div class="my-date-wrappper"  :class="{ 'border-is-invalid': form.errors.has('work_date') }">
                               <el-date-picker
                                   v-model="form.work_date"
                                   type="date"
-                                  placeholder="Pick created day">
+                                  format="yyyy-MM-dd"
+                                  placeholder="">
                               </el-date-picker>
                           </div>
                           <has-error :form="form" field="work_date"></has-error>
@@ -76,7 +77,7 @@
     },
     data() {
       return {
-          titleDialog:'Create tour by quotation:',
+          titleDialog:'Create Dossier by quotation:',
           state:'close',
           isVisibleDialog:false,
           form: new Form({
@@ -84,10 +85,12 @@
               people: '',
               work_date:'',
           }),
+          error_message:'Error from external source.Problem with your input.'
       }
     },
     methods: {
         show() {
+            this.form.errors.all();
             this.state='open';
             this.isVisibleDialog=true;
         },
@@ -102,6 +105,11 @@
             if (data.success) {
                 if (data.data.success ==false) {//--answer from external api
                     console.log('ERROR Tour by quotation:',data.data.message);
+                    if (data.message != undefined) {
+                        this.error_message=data.message;
+                    }
+
+                    this.form.errors.set({message:data.message});
                     this.form.errors.all();
                 } else {
                     console.log('Tour by quotation Created...');
@@ -113,6 +121,10 @@
             } else { //---error
                 console.log('ERROR Tour by quotation:',data);
                 this.form.successful=false;
+                this.form.errors.set({message:data.message});
+                if (data.message != undefined) {
+                    this.error_message=data.message;
+                }
                 //if (data.errors.length>0) {
                     this.form.errors.all();
                 //}
@@ -133,5 +145,8 @@
     min-height: 1px;
     padding-right: 15px;
     padding-left: 15px;
+}
+.border-is-invalid {
+    border-color: #dc3545;
 }
 </style>
