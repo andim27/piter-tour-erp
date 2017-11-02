@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tours;
 
 use App\Tour;
+use App\TourProgram;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -29,6 +30,7 @@ class TourController extends Controller
         $this->validate($request, [
             'ext_q_id' => 'required|numeric',
         ]);
+        //return $request['work_date'];
         try {
             if (!empty($request['ext_q_id'])) {
                 $user = $request->user();//--get current user---
@@ -47,6 +49,8 @@ class TourController extends Controller
                 $result = curl_exec($curl);
                 curl_close($curl);
                 $result = json_decode($result, 1);
+                //return $result['data']['quotation']['program'];
+
                 if ($result['success'] ==true) {
                     //---CHECK Group people
                     $people_checked=false;
@@ -94,6 +98,7 @@ class TourController extends Controller
                     $tour->nights=@$result['data']['quotation']['nights'];
                     $tour->sales_user_name=@$result['data']['quotation']['user']['username'];
                     $tour->booking_user_name=@$user->name;
+                    $tour->work_date=$req_work_date;
                     $tour->date_from=@$result['data']['quotation']['dates'][0]['dateFrom'];
                     $tour->date_to=@$result['data']['quotation']['dates'][0]['dateTo'];
                     //--clear options--
@@ -106,6 +111,13 @@ class TourController extends Controller
                     }
                     $tour->options=json_encode($options);
                     $tour->save();
+                    //return $tour->id;
+                    //---SAVE tour programs from external sourse
+                    $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program']);
+                    if ($res != true) {
+                        $out_res=['errors'=>['program'=>['0'=>'Tour program error:']],'message'=>'Tour program save error'];
+                        return response()->json($out_res)->setStatusCode(422, 'Tour program save error!');;
+                    }
 
 
                 }

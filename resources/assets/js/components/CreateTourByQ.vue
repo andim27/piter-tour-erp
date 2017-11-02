@@ -36,7 +36,8 @@
                               <el-date-picker
                                   v-model="form.work_date"
                                   type="date"
-                                  format="yyyy-MM-dd"
+                                  format="yyyy/MM/dd"
+                                  value-format="yyyy-MM-dd"
                                   placeholder="">
                               </el-date-picker>
                           </div>

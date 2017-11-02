@@ -17,7 +17,7 @@
                       </el-col>
 
                   </el-row>
-                  <data-tables :data="items" :table-props="tableProps" :search-def="bookingSearchDef" :pagination-def="paginationTourDef" >
+                  <data-tables :data="items" :table-props="tableProps" :search-def="bookingSearchDef" :pagination-def="paginationTourDef" :header-row-class-name="tableHeadClass">
                       <el-table-column
                               label="qt_id"
                               prop="ext_q_id"
@@ -45,7 +45,7 @@
                       <el-table-column
                               label="Period"
                               width="140">
-                          <template  scope="scope">
+                          <template  slot-scope="scope">
                               <p>{{scope.row.date_from}}</p>
                               <p>{{scope.row.date_to}}</p>
                           </template>
@@ -60,7 +60,7 @@
                               label="PAX"
                               prop="people"
                               width="100">
-                          <template  scope="scope">
+                          <template  slot-scope="scope">
                               <!--<p>{{scope.row.people}}+{{getOptionsField('ftl_number',scope.row.options)}}</p>-->
                               <p>{{scope.row.people}}<span v-if="scope.row.ftl_number !=''">+{{scope.row.ftl_number}}</span></p>
 
@@ -81,7 +81,7 @@
                       <el-table-column
                               label="Dossier"
                               width="80">
-                          <template  scope="scope">
+                          <template  slot-scope="scope">
                               <p>{{scope.row.dossier}}</p>
                           </template>
                       </el-table-column>
@@ -149,6 +149,9 @@
       }
     },
     methods: {
+        tableHeadClass(params) {
+            return "booking-table-head";
+        },
         handleTabClick(tab, event) {
             console.log(tab, event);
         },
@@ -205,5 +208,7 @@
   color:#4db3ff;
   text-shadow: silver;
 }
-
+.booking-table-head {
+    background-color: #6c757d;
+}
 </style>

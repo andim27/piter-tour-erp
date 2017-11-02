@@ -28,7 +28,12 @@
       </el-row>
       <el-row :justify="center" :align="top">
           <el-col :span="12" :offset="6" >
-              <el-tree :data="department_tree" :props="defaultProps"  node-key="id" @node-click="handleNodeClick" :render-content="renderTreeContent" ></el-tree>
+              <el-card class="departments-card">
+                  <div slot="header" class="header-card">
+                      <span style="line-height: 36px;">Departments/workers</span>
+                  </div>
+                    <el-tree :data="department_tree" :props="defaultProps"  node-key="id" @node-click="handleNodeClick" :render-content="renderTreeContent" ></el-tree>
+              </el-card>
           </el-col>
           <el-col :offset="6"></el-col>
       </el-row>

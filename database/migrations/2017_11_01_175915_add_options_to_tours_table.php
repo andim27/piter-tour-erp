@@ -15,7 +15,7 @@ class AddOptionsToToursTable extends Migration
     {
         Schema::table('tours', function (Blueprint $table) {
             //
-            $table->json('options')->nullable();;
+            $table->json('options')->nullable();
         });
     }
 

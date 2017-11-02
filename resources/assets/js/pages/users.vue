@@ -24,7 +24,7 @@
                     <el-table-column
                     label="avatar"
                     width="120">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                                 <img  v-if="scope.row.photo != ''" class="my-avatar" :src="'images/avatar/'+scope.row.avatar"></img>
                                 <img v-else class="my-avatar" src="images/default-avatar.png"></img>
 
@@ -34,7 +34,7 @@
                         label="Fio"
                         label-class-name="fio-class"
                         width="260">
-                        <template scope="scope">
+                        <template slot-scope="scope">
                             <el-popover trigger="click" placement="top"  style="cursor:pointer">
                                 <p><el-icon name="information" style="display: inline-block;float:left"></el-icon></p>
                                 <p><strong>Id:</strong> {{ scope.row.id }}</p>
@@ -54,7 +54,7 @@
                         <el-table-column
                             label="Info"
                             width="320">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <p>Email: <span class="personal-contact">{{ scope.row.email }}</span></p>
                                 <p v-if="scope.row.skype">Skype: <span class="personal-contact">{{ scope.row.skype }}</span></p>
                                 <p v-if="scope.row.tel">Tel: <span class="personal-contact">{{ scope.row.tel }}</span></p>
@@ -69,7 +69,7 @@
                             prop="department"
                             sortable
                             width="210">
-                            <template scope="scope">
+                            <template slot-scope="scope">
                                 <el-icon name="document"></el-icon>
                                 <span style="margin-left: 10px">{{ scope.row.department }}</span>
                                 <p v-if="scope.row.head ==1" class="leader-wrap"><span class="leader">Leader</span></p>
