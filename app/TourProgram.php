@@ -9,10 +9,15 @@ class TourProgram extends Model
     //
     protected $table = 'tour_programs';
 
-    static public function saveFromExt($tour_id,$tour_program) {
+    static public function saveFromExt($tour_id,$tour_program,$action) {
         if (empty($tour_id)) {return null;}
         if (empty($tour_program)) {return null;}
         try {
+            if ($action=='update') {
+                //-- delete existed records --because too many info needs to be updated
+                //TourProgram()::where(['tour_id'=>$tour_id])->delete();
+                \DB::table('tour_programs')->where('tour_id', '==', $tour_id)->delete();
+            }
 
             foreach ($tour_program as $day_index=>$day_program) {
 

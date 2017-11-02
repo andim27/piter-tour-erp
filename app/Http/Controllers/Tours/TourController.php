@@ -86,8 +86,10 @@ class TourController extends Controller
                     }
                     //--ADD tour record(Dosie) to table
                     $tour=Tour::where(['ext_q_id'=>$request['ext_q_id']])->first();
+                    $tour_programm_action='create';
                     if (empty($tour)) {
                         $tour=new Tour();
+                        $tour_programm_action='update';
                     }
                     //--update if exist ext quotation
                     $tour->ext_q_id=$result['data']['quotation']['id'];
@@ -113,7 +115,7 @@ class TourController extends Controller
                     $tour->save();
                     //return $tour->id;
                     //---SAVE tour programs from external sourse
-                    $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program']);
+                    $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program'],$tour_programm_action);
                     if ($res != true) {
                         $out_res=['errors'=>['program'=>['0'=>'Tour program error:']],'message'=>'Tour program save error'];
                         return response()->json($out_res)->setStatusCode(422, 'Tour program save error!');;
