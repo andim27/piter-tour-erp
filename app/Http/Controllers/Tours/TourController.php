@@ -73,6 +73,7 @@ class TourController extends Controller
                     $ext_d='';
                     //$req_work_date =date(Y-m-d h:i:s, strtotime($yourDate));
                     $req_work_date =date('Y-m-d', strtotime($request['work_date']));
+                    $tour_date_from =@$result['data']['quotation']['dates'][0]['dateFrom'];
                     for ($i=0;$i<count($tour_dates);$i++) {
                         $ext_d=$ext_d.($i==0?'':', ').$tour_dates[$i]['dateFrom'];
                         if ($tour_dates[$i]['dateFrom'] == $req_work_date ) {
@@ -101,7 +102,7 @@ class TourController extends Controller
                     $tour->sales_user_name=@$result['data']['quotation']['user']['username'];
                     $tour->booking_user_name=@$user->name;
                     $tour->work_date=$req_work_date;
-                    $tour->date_from=@$result['data']['quotation']['dates'][0]['dateFrom'];
+                    $tour->date_from=$tour_date_from;
                     $tour->date_to=@$result['data']['quotation']['dates'][0]['dateTo'];
                     //--clear options--
                     $options=@$result['data']['quotation']['options'];
@@ -111,11 +112,12 @@ class TourController extends Controller
                             break;
                         }
                     }
+                    $tour->currency_type_str='RUB';//--- get from api ?
                     $tour->options=json_encode($options);
                     $tour->save();
                     //return $tour->id;
                     //---SAVE tour programs from external sourse
-                    $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program'],$tour_programm_action);
+                    $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program'],$tour_programm_action,$tour_date_from);
                     if ($res != true) {
                         $out_res=['errors'=>['program'=>['0'=>'Tour program error:']],'message'=>'Tour program save error'];
                         return response()->json($out_res)->setStatusCode(422, 'Tour program save error!');;

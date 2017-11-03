@@ -9,7 +9,7 @@ class TourProgram extends Model
     //
     protected $table = 'tour_programs';
 
-    static public function saveFromExt($tour_id,$tour_program,$action) {
+    static public function saveFromExt($tour_id,$tour_program,$action,$tour_date_from) {
         if (empty($tour_id)) {return null;}
         if (empty($tour_program)) {return null;}
         try {
@@ -32,11 +32,18 @@ class TourProgram extends Model
                         $tp->tour_id=$tour_id;
                         $tp->day_index=(int)$day_index+1;
                         $tp->day_service_index=(int)$day_service_index+1;
-                        $tp->service_date=\DateTime::createFromFormat('Y-m-d',$day_program['dateYmd']);
+                        if (empty($day_program['dateYmd'])) {
+                            //--ask tour(dateFrom)
+                            $tp->service_date=$tour_date_from;//--needs++ ???
+                        } else {
+                            $tp->service_date=\DateTime::createFromFormat('Y-m-d',$day_program['dateYmd']);
+                        }
+
                         $tp->options=json_encode(['cities_title'=>$day_program['citiesTitle'],
                             'service_date_title'=>$day_program['date']]);
                         $tp->city_name=$city_services['city']['code'];
                         $tp->service_name=$service['name']['value'];
+                        $tp->currency_type_str='RUB';
                         //$tp->service_name=$service['oldName'];
                         $tp->save();
                     }

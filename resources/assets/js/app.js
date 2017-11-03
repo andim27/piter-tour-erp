@@ -10,7 +10,7 @@ import ElementUI from 'element-ui'
 //import 'element-ui/lib/theme-default/index.css'
 import 'element-ui/lib/theme-chalk/index.css'
 //import 'element-theme-default'
-import { Button, Popover, Icon, Table, Dialog, Tabs, Notification, Tree, DatePicker } from 'element-ui'
+import { Button, Popover, Icon, Table, Dialog, Tabs, Notification, Tree, DatePicker, Switch } from 'element-ui'
 import { DataTables } from 'vue-data-tables'
 import  lang  from 'element-ui/lib/locale/lang/en'
 import  locale  from 'element-ui/lib/locale'
@@ -28,6 +28,7 @@ Vue.use(Notification)
 Vue.use(DataTables)
 Vue.use(Tree)
 Vue.use(DatePicker)
+Vue.use(Switch)
 
 var VueEventBus = require('vue-event-bus')
 Vue.use(VueEventBus)

@@ -17,7 +17,7 @@
                       </el-col>
 
                   </el-row>
-                  <data-tables :data="items" :table-props="tableProps" :search-def="bookingSearchDef" :pagination-def="paginationTourDef" :header-row-class-name="tableHeadClass">
+                  <data-tables :data="items"  @row-click="handleTourClick" :table-props="tableProps" :search-def="bookingSearchDef" :pagination-def="paginationTourDef" :header-row-class-name="tableHeadClass">
                       <el-table-column
                               label="qt_id"
                               prop="ext_q_id"
@@ -102,6 +102,7 @@
     import axios from 'axios'
     import CreateTourByQ from'~/components/CreateTourByQ'
 
+
   export default  {
     components:{
       CreateTourByQ
@@ -149,11 +150,23 @@
       }
     },
     methods: {
-        tableHeadClass(params) {
+        tableHeadClass(row, rowIndex) {
+            console.log('tableHeadClass index:',rowIndex);
             return "booking-table-head";
         },
         handleTabClick(tab, event) {
             console.log(tab, event);
+        },
+        handleTourClick(row, event, column) {
+            //console.log(row,event,column);
+            this.$router.push({ name: 'tour-program',params:{
+                tour_id:row.id,
+                nights:row.nights,
+                ftl_number:row.ftl_number,
+                //currency_type_str:row.currency_type_str
+                currency_type_str:'RUB'
+            }
+            })
         },
         createNew() {
             this.$refs.createTourByQ.show();
