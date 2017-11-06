@@ -38,12 +38,18 @@ class TourProgram extends Model
                         } else {
                             $tp->service_date=\DateTime::createFromFormat('Y-m-d',$day_program['dateYmd']);
                         }
+                        if (!empty($day_program['date'])) {
+                            $tp->options=json_encode(['cities_title'=>'',
+                                'service_date_title'=>$day_program['date']]);
+                            //$tp->options=json_encode(['cities_title'=>$day_program['citiesTitle'],'service_date_title'=>$day_program['date']]);
+                        } else {
+                            $tp->options=json_encode(['cities_title'=>'',
+                                'service_date_title'=>'']);
+                        }
 
-                        $tp->options=json_encode(['cities_title'=>$day_program['citiesTitle'],
-                            'service_date_title'=>$day_program['date']]);
                         $tp->city_name=$city_services['city']['code'];
                         $tp->service_name=$service['name']['value'];
-                        $tp->currency_type_str='RUB';
+                        //$tp->currency_type_str='RUB';
                         //$tp->service_name=$service['oldName'];
                         $tp->save();
                     }

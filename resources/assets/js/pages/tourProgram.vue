@@ -154,6 +154,9 @@
     mounted() {
       this.initParams();
       this.getTourId();
+      this.getProgram();
+
+
     },
     data() {
       return {
@@ -161,6 +164,7 @@
         currency_type_str:'RUB',
         people_str:'31+1',
         nights:1,
+        tour_records:[],
         items:[
             {day_index:1,day_title:'Moscow, 5 May Friday',
                 services:[
@@ -207,6 +211,61 @@
         },
         getTourId() {
             this.tour_id=this.$route.params.tour_id;
+        },
+        async getProgram() {
+
+            try {
+                //this.tour_id=this.$route.params.tour_id;
+                var params = new URLSearchParams();
+                //params.token = this.$route.params.token;
+                console.log('Get trogram...tour_id=',this.tour_id);
+                params.append('tour_id', this.tour_id);
+
+                const { data } = await axios.post('/api/tours/program',params,{withCredantial:true});
+                if (data.success) {
+                    this.tour_records =data.data;
+                    this.items =data.data;
+                    console.log('TOUR PROGRAM:',this.tour_records);
+                    //this.makeItems();
+                } else {
+                    this.$notify.error({
+                        title: data.error,
+                        message: data.error_description,
+                        duration:4500
+                    });
+                }
+
+
+            } catch(e) {
+                this.items=[];
+                this.$notify.error({
+                    title: 'Get tour program',
+                    message: 'error',
+                    duration:4500
+                });
+
+            }
+        },
+        makeItems() {
+            if (this.tour_records.length ==0) {
+                this.$notify.error({
+                    title: 'Error',
+                    message: "Can't create tour program...",
+                    duration:2500
+                });
+            } else {
+                // -- convert tour records for view ---
+                this.items=[];
+                for (let i=0;i<this.tour_records.length;i++) {
+                    var services=[];
+                    this.items.push(
+                        {day_index:this.tour_records[i].day_index,day_title:this.tour_records[i].day_title,
+                            services:services
+                        }
+                    );
+                }
+
+            }
         },
         getCurrency() {
           return this.currency_type_str;

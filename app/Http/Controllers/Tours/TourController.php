@@ -29,6 +29,7 @@ class TourController extends Controller
     {
         $this->validate($request, [
             'ext_q_id' => 'required|numeric',
+            'dossier' => 'required'
         ]);
         //return $request['work_date'];
         try {
@@ -81,6 +82,7 @@ class TourController extends Controller
                             break;
                         }
                     }
+
                     if ($tour_date_checked==false) {
                         $out_res=['errors'=>['work_date'=>['0'=> $req_work_date.' Tour  start date wrong:<'.$ext_d.'>']],'message'=> $req_work_date.'Tour date value error,valid date:<'.$ext_d.'>'];
                         return response()->json($out_res)->setStatusCode(202, 'Tour date value error!');;
@@ -112,10 +114,14 @@ class TourController extends Controller
                             break;
                         }
                     }
+                    //--dossier#
+                    $options['dossier']=$request['dossier'];
+                    $options['dossier#']['value']=$request['dossier'];
+
                     $tour->currency_type_str='RUB';//--- get from api ?
                     $tour->options=json_encode($options);
                     $tour->save();
-                    //return $tour->id;
+                    //return $tour_date_from;
                     //---SAVE tour programs from external sourse
                     $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program'],$tour_programm_action,$tour_date_from);
                     if ($res != true) {
@@ -133,6 +139,42 @@ class TourController extends Controller
         }
         return ['success' => 'no', 'data' => ''];
 
+    }
+
+    public function getProgram(Request $request)
+    {
+
+        $this->validate($request, [
+            'tour_id' => 'required',
+        ]);
+
+        try {
+            //return ['success'=>'ok','data'=>'???'.$request['tour_id']];
+            $tour_id=$request['tour_id'];
+            $records=[];
+            $tour_program_arr=[];
+            //$days_collect=\DB::table('tour_programs')->selectRaw("DISTINCT day_index")->where('tour_id','=',$tour_id)->get();
+            //$tour_days=$days_collect->count();
+            $records=TourProgram::where('tour_id','=',$tour_id)->orderBy('day_index')->selectRaw("*")->get();
+            $days_tour_arr=TourProgram::where('tour_id','=',$tour_id)->orderBy('day_index')->selectRaw("DISTINCT day_index,options")->get()->toArray();
+            foreach($days_tour_arr as $day) {
+                $options=json_decode($day['options']);
+                if (!empty($options->service_date_title)) {
+                    $day_title=$options->service_date_title;
+                } else {
+                    $day_title='Day title';
+                }
+                $services=$records->where('day_index',$day['day_index']);
+                $supplements=[];//{service_name:'transport',service_hours:8,service_price:120,service_sum:960,is_transport:true}
+                array_push($tour_program_arr,['day_index'=>$day['day_index'],'day_title'=>$day_title,'services'=>$services,'supplements'=>$supplements]);
+            }
+
+            //$all_days
+            return ['success'=>'ok','data'=>$tour_program_arr];
+
+        } catch (Exeption $e) {
+            return ['error'=>$e->getMessage(),'error_description'=>'error line:'.$e->getLine()];
+        }
     }
     /**
      * Show the form for creating a new resource.

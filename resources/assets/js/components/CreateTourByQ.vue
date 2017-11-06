@@ -19,6 +19,15 @@
                           <has-error :form="form" field="ext_q_id"></has-error>
                       </div>
                   </div>
+                      <!-- Dossier -->
+                      <div class="form-group row">
+                          <label class="col-md-3 col-form-label text-md-right">Dossier N:</label>
+                          <div class="col-md-7">
+                              <input v-model="form.dossier" type="text" name="dossier" class="form-control"
+                                     :class="{ 'is-invalid': form.errors.has('dossier') }">
+                              <has-error :form="form" field="dossier"></has-error>
+                          </div>
+                      </div>
 
                       <!-- people -->
                       <div class="form-group row">
@@ -83,6 +92,7 @@
           isVisibleDialog:false,
           form: new Form({
               ext_q_id: '',
+              dossier:'',
               people: '',
               work_date:'',
           }),

@@ -62,7 +62,7 @@
                               width="100">
                           <template  slot-scope="scope">
                               <!--<p>{{scope.row.people}}+{{getOptionsField('ftl_number',scope.row.options)}}</p>-->
-                              <p>{{scope.row.people}}<span v-if="scope.row.ftl_number !=''">+{{scope.row.ftl_number}}</span></p>
+                              <p>{{scope.row.people}}<span v-if="(scope.row.ftl_number !='')&&(scope.row.ftl_number !='0')">+{{scope.row.ftl_number}}</span></p>
 
                           </template>
                       </el-table-column>
@@ -174,9 +174,16 @@
         addSpeshialFields() {
             for (let i=0;i<this.items.length;i++) {
                 this.items[i].options=JSON.parse(this.items[i].options);
-                this.items[i].ftl_number=this.getOptionsField('ftl_number',this.items[i].options)
-                this.items[i].dossier=this.getOptionsField('dossierNr',this.items[i].options)
+                this.items[i].ftl_number=this.getOptionsField('ftl_number',this.items[i].options);
+                this.items[i].dossier=this.getOptionsField('dossierNr',this.items[i].options);
+                //this.items[i].dossier='';
+                if ((this.items[i].options != undefined)&&(this.items[i].options.dossier != undefined)) {
+                    this.items[i].dossier=this.items[i].options.dossier;
+                }
+
+                //console.log('i='+i+' qt_id='+this.items[i].ext_q_id+'  dossier='+this.items[i].dossier);
             }
+            //console.log('After ADDSpeshialFields:',this.items);
         },
         async getTours(){
             //const { data } = await axios({method:'post',url:'/api/users',withcredantial:true});
