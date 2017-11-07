@@ -25,6 +25,13 @@
                               width="100">
                       </el-table-column>
                       <el-table-column
+                              label="Dossier"
+                              width="80">
+                          <template  slot-scope="scope">
+                              <p>{{scope.row.dossier}}</p>
+                          </template>
+                      </el-table-column>
+                      <el-table-column
                               label="created"
                               prop="created_at"
                               sortable
@@ -78,13 +85,7 @@
                               label-class-name="fio-class"
                               width="180">
                       </el-table-column>
-                      <el-table-column
-                              label="Dossier"
-                              width="80">
-                          <template  slot-scope="scope">
-                              <p>{{scope.row.dossier}}</p>
-                          </template>
-                      </el-table-column>
+
                   </data-tables>
                   <create-tour-by-q  ref="createTourByQ"></create-tour-by-q>
               </el-tab-pane>
@@ -161,6 +162,7 @@
             //console.log(row,event,column);
             this.$router.push({ name: 'tour-program',params:{
                 tour_id:row.id,
+                dossier:row.dossier,
                 nights:row.nights,
                 ftl_number:row.ftl_number,
                 //currency_type_str:row.currency_type_str

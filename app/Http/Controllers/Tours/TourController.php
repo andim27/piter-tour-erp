@@ -88,7 +88,8 @@ class TourController extends Controller
                         return response()->json($out_res)->setStatusCode(202, 'Tour date value error!');;
                     }
                     //--ADD tour record(Dosie) to table
-                    $tour=Tour::where(['ext_q_id'=>$request['ext_q_id']])->first();
+                    //$tour=Tour::where(['ext_q_id'=>$request['ext_q_id']])->first();
+                    $tour=Tour::where(['dossier'=>$request['dossier']])->first();
                     $tour_programm_action='create';
                     if (empty($tour)) {
                         $tour=new Tour();
@@ -96,6 +97,7 @@ class TourController extends Controller
                     }
                     //--update if exist ext quotation
                     $tour->ext_q_id=$result['data']['quotation']['id'];
+                    $tour->dossier=$request['dossier'];
                     $tour->tour_name=@$result['data']['quotation']['name'];
                     $tour->client_name=@$result['data']['quotation']['clientName'];
                     $tour->people=@$result['data']['quotation']['groups'][0]['people'];
@@ -157,6 +159,7 @@ class TourController extends Controller
             //$tour_days=$days_collect->count();
             $records=TourProgram::where('tour_id','=',$tour_id)->orderBy('day_index')->selectRaw("*")->get();
             $days_tour_arr=TourProgram::where('tour_id','=',$tour_id)->orderBy('day_index')->selectRaw("DISTINCT day_index,options")->get()->toArray();
+            $cur_day_index=0;
             foreach($days_tour_arr as $day) {
                 $options=json_decode($day['options']);
                 if (!empty($options->service_date_title)) {
@@ -164,7 +167,13 @@ class TourController extends Controller
                 } else {
                     $day_title='Day title';
                 }
-                $services=$records->where('day_index',$day['day_index']);
+                //if ($day['day_index'] != $cur_day_index) {
+                    //$services=[];
+                    $services=$records->where('day_index',$day['day_index']);
+                    $services->all();
+                    $cur_day_index = $day['day_index'];
+                //}
+
                 $supplements=[];//{service_name:'transport',service_hours:8,service_price:120,service_sum:960,is_transport:true}
                 array_push($tour_program_arr,['day_index'=>$day['day_index'],'day_title'=>$day_title,'services'=>$services,'supplements'=>$supplements]);
             }

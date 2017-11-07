@@ -4,7 +4,15 @@
        <router-link :to="{ name: 'booking' }">
          <el-button type="primary" icon="el-icon-arrow-left">Back</el-button>
         </router-link>
-    <h1>Tour-program(Dossie)#{{tour_id}}</h1>
+      <el-tooltip :content="'tour_id='+tour_id" placement="bottom" effect="light">
+          <h1 style="width:150px">Dossie#({{dossier}})</h1>
+          <el-switch
+                  v-model="is_quotes"
+                  active-text="Show quotes"
+                  inactive-text="Hide quotes">
+          </el-switch>
+      </el-tooltip>
+
       <div class="content">
         <div v-for="(item,index) in items">
            <h3>Day {{item.day_index}} of {{nights}}: {{item.day_title}}</h3>
@@ -15,13 +23,13 @@
                 <el-table-column
                   prop="time_from"
                   label="Time from"
-                  width="150">
+                  width="100">
                     <template slot-scope="scope">
                         <el-time-select
                                 v-model="scope.row.time_from"
                                 size="small"
                                 width="120"
-                                style="width:120px"
+                                style="width:80px"
                                 :picker-options="{
                                     start: '08:00',
                                     step: '00:15',
@@ -34,13 +42,13 @@
                 <el-table-column
                   prop="time_to"
                   label="Time to"
-                  width="150">
+                  width="100">
                     <template slot-scope="scope">
                         <el-time-select
                                 v-model="scope.row.time_to"
                                 size="small"
                                 width="120"
-                                style="width:120px"
+                                style="width:80px"
                                 :picker-options="{
                                     start: '08:00',
                                     step: '00:15',
@@ -55,12 +63,34 @@
                     <template slot-scope="scope">
                         <span class="city-service-wrapp">{{scope.row.city_name}}:</span>
                         <span>{{scope.row.service_name}}</span>
+                        <p><el-input placeholder="Comment..." v-model="scope.row.comment"></el-input><el-button type="primary" icon="el-icon-edit"></el-button></p>
                     </template>
 
                 </el-table-column>
+                 <el-table-column
+                         label="Price-q"
+                         width="80">
+                         <template slot-scope="scope">
+                            <span class="city-service-wrapp">{{scope.row.q_price}}</span>
+                         </template>
+                 </el-table-column>
+                 <el-table-column
+                         label="Hours-q"
+                         width="80">
+                     <template slot-scope="scope">
+                         <span class="city-service-wrapp">{{scope.row.q_hours}}</span>
+                     </template>
+                 </el-table-column>
+                 <el-table-column
+                         label="Sum-q"
+                         width="80">
+                     <template slot-scope="scope">
+                         <span class="city-service-wrapp">{{scope.row.q_sum}}</span>
+                     </template>
+                 </el-table-column>
                 <el-table-column
-                         label="Supplement"
-                         width="130">
+                         label="T"
+                         width="80">
                     <template slot-scope="scope">
                         <!--<el-checkbox v-model="scope.row.is_transport">Car</el-checkbox>-->
                         <el-switch
@@ -73,7 +103,7 @@
                  </el-table-column>
               </el-table>
               <!--Supplement-->
-              <div  v-if="item.supplements != undefined" class="supplement-wrap">
+              <div  v-if="(item.supplements != undefined) &&(item.supplements.length >0)" class="supplement-wrap">
                   <el-table
                     :data="item.supplements"
                     style="width: 100%"
@@ -81,13 +111,13 @@
                     :row-class-name="tableRowClassName">
                     <el-table-column
                           label="Time from"
-                          width="150">
+                          width="100">
                         <template slot-scope="scope">
                             <el-time-select
                                     placeholder="Start time"
                                     v-model="scope.row.time_from"
                                     size="mini"
-                                    style="width:120px"
+                                    style="width:100px"
                                     :picker-options="{
                                               start: '06:00',
                                               step: '00:15',
@@ -99,13 +129,13 @@
                         </el-table-column>
                       <el-table-column
                               label="Time to"
-                              width="150">
+                              width="100">
                           <template slot-scope="scope">
                               <el-time-select
                                       placeholder="End time"
                                       v-model="scope.row.time_to"
                                       size="mini"
-                                      style="width:120px"
+                                      style="width:100px"
                                       :picker-options="{
                                               start: '08:30',
                                               step: '00:15',
@@ -155,15 +185,15 @@
       this.initParams();
       this.getTourId();
       this.getProgram();
-
-
     },
     data() {
       return {
         tour_id:'',
+        dossier:'',
         currency_type_str:'RUB',
         people_str:'31+1',
         nights:1,
+        is_quotes:1,
         tour_records:[],
         items:[
             {day_index:1,day_title:'Moscow, 5 May Friday',
@@ -208,6 +238,7 @@
               this.people_str =this.people_str +'+'+this.$route.params.ftl_number;
           }
           this.currency_type_str = this.$route.params.currency_type_str;
+          this.dossier = this.$route.params.dossier;
         },
         getTourId() {
             this.tour_id=this.$route.params.tour_id;

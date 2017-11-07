@@ -26,7 +26,7 @@ class CreateTourProgramsTable extends Migration
             $table->unsignedInteger('service_id')->nullable();
             $table->string('service_name')->nullable();
             $table->boolean('is_supplement')->default(false);//--needed supplement(guid||transpost|etc)
-            $table->boolean('is_transpost')->default(false);//--need transport
+            $table->boolean('is_transport')->default(false);//--need transport
             $table->decimal('service_price', 15, 2)->nullable();
             $table->unsignedInteger('service_hours')->nullable();
             $table->decimal('service_sum', 15, 2)->nullable();
