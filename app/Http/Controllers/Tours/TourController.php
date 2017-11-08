@@ -170,6 +170,9 @@ class TourController extends Controller
                 //if ($day['day_index'] != $cur_day_index) {
                     //$services=[];
                     $services=$records->where('day_index',$day['day_index']);
+                    $services->concat(['visible_comment' => false]);
+                    //--set is_transport to true/false for UI component
+
                     $services->all();
                     $cur_day_index = $day['day_index'];
                 //}

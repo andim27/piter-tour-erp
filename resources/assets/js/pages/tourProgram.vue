@@ -4,14 +4,23 @@
        <router-link :to="{ name: 'booking' }">
          <el-button type="primary" icon="el-icon-arrow-left">Back</el-button>
         </router-link>
-      <el-tooltip :content="'tour_id='+tour_id" placement="bottom" effect="light">
-          <h1 style="width:150px">Dossie#({{dossier}})</h1>
-          <el-switch
-                  v-model="is_quotes"
-                  active-text="Show quotes"
-                  inactive-text="Hide quotes">
-          </el-switch>
-      </el-tooltip>
+
+          <el-row>
+              <el-col :span="6">
+                  <el-tooltip :content="'tour_id='+tour_id" placement="bottom" effect="light">
+                    <h1>Dossie#({{dossier}})</h1>
+                  </el-tooltip>
+              </el-col>
+              <el-col :span="6" :offset="12">
+                  <el-switch
+                          @change="changeQuotes"
+                          v-model="is_quotes"
+                          active-text="Show quotes"
+                          inactive-text="Hide quotes">
+                  </el-switch>
+              </el-col>
+          </el-row>
+
 
       <div class="content">
         <div v-for="(item,index) in items">
@@ -23,13 +32,13 @@
                 <el-table-column
                   prop="time_from"
                   label="Time from"
-                  width="100">
+                  fixed
+                  width="120">
                     <template slot-scope="scope">
                         <el-time-select
                                 v-model="scope.row.time_from"
                                 size="small"
-                                width="120"
-                                style="width:80px"
+                                style="width:100px"
                                 :picker-options="{
                                     start: '08:00',
                                     step: '00:15',
@@ -42,13 +51,13 @@
                 <el-table-column
                   prop="time_to"
                   label="Time to"
-                  width="100">
+                  fixed
+                  width="120">
                     <template slot-scope="scope">
                         <el-time-select
                                 v-model="scope.row.time_to"
                                 size="small"
-                                width="120"
-                                style="width:80px"
+                                style="width:100px"
                                 :picker-options="{
                                     start: '08:00',
                                     step: '00:15',
@@ -59,48 +68,104 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                         width="30"
+                         label="C">
+                     <template slot-scope="scope">
+                         <p><el-checkbox v-model="scope.row.visible_comment"></el-checkbox></p>
+                     </template>
+                </el-table-column>
+                <el-table-column
                     label="Service name">
                     <template slot-scope="scope">
+                        <p>
+                        <el-tooltip  placement="top" effect="light">
+                            <div slot="content">Status:<span>{{scope.row.service_state}}</span><br/>Date:</div>
+                            <i class="el-icon-document"></i>
+                        </el-tooltip>
+
                         <span class="city-service-wrapp">{{scope.row.city_name}}:</span>
-                        <span>{{scope.row.service_name}}</span>
-                        <p><el-input placeholder="Comment..." v-model="scope.row.comment"></el-input><el-button type="primary" icon="el-icon-edit"></el-button></p>
+                        <el-button type="text" @click="clickComment(scope.row)">{{scope.row.service_name}}</el-button>
+                        </p>
+                        <!--<p><el-checkbox v-model="scope.row.visible_comment">comment...</el-checkbox></p>-->
+                            <!--<p v-show="(scope.row.is_comment != undefined)&&(scope.row.is_comment==true)" class="my-service-comment"><el-input  placeholder="Comment..." v-model="scope.row.comment"></el-input><el-button type="primary" icon="el-icon-edit"></el-button></p>-->
+                        <p v-if="(scope.row.visible_comment == true)" class="my-service-comment"><el-input  style="width:80%;height:28px;" placeholder="Comment..." size="small" v-model="scope.row.comment"></el-input><el-button type="primary" plain size="small" icon="el-icon-edit"></el-button></p>
                     </template>
 
                 </el-table-column>
                  <el-table-column
-                         label="Price-q"
-                         width="80">
-                         <template slot-scope="scope">
-                            <span class="city-service-wrapp">{{scope.row.q_price}}</span>
-                         </template>
-                 </el-table-column>
-                 <el-table-column
-                         label="Hours-q"
-                         width="80">
+                         v-if="(is_quotes==true)"
+                         width="30"
+                         label="Qty">
                      <template slot-scope="scope">
-                         <span class="city-service-wrapp">{{scope.row.q_hours}}</span>
+                         <p>{{scope.row.qty}}</p>
                      </template>
                  </el-table-column>
                  <el-table-column
-                         label="Sum-q"
-                         width="80">
+                         v-if="(is_quotes==true)"
+                         label="Price"
+                         width="120">
+                         <template slot-scope="scope">
+                             <p><span>Q:</span><span class="my-q-field">{{scope.row.q_price}}</span></p>
+                             <p><span>  </span><el-input  class="my-input-price" v-model="scope.row.service_price"  size="mini"></el-input></p>
+
+                         </template>
+                 </el-table-column>
+                 <el-table-column
+                         v-if="(is_quotes==true)"
+                         label="Hours"
+                         width="100">
                      <template slot-scope="scope">
-                         <span class="city-service-wrapp">{{scope.row.q_sum}}</span>
+                         <p class="my-wrap-price"><span>Q:</span><span class="my-q-field">{{scope.row.q_hours}}</span></p>
+                         <p class="my-wrap-price"><span>  </span><el-input  class="my-input-price" v-model="scope.row.service_hours"  size="mini"></el-input></p>
+
+                     </template>
+                 </el-table-column>
+                 <el-table-column
+                         v-if="(is_quotes==true)"
+                         label="Sum"
+                         width="120">
+                     <template slot-scope="scope">
+                         <p>
+                             <span>Q:</span><span class="my-q-field">{{scope.row.q_sum}}</span>
+                         </p>
+                         <p>
+                             <span>  </span>
+                             <el-input  class="my-input-price" v-model="scope.row.service_sum"  size="mini"></el-input>
+                         </p>
+
+                     </template>
+                 </el-table-column>
+                 <el-table-column
+                         v-if="(is_quotes==true)"
+                         label="Curr"
+                         width="50">
+                     <template slot-scope="scope">
+                        {{scope.row.currency_type_str}}
                      </template>
                  </el-table-column>
                 <el-table-column
                          label="T"
-                         width="80">
+                         width="70">
                     <template slot-scope="scope">
-                        <!--<el-checkbox v-model="scope.row.is_transport">Car</el-checkbox>-->
+                        <!--<el-checkbox v-model="transport" >{{scope.row.is_transport}}</el-checkbox>-->
+                        <p v-if="(scope.row.is_transport==1)||(scope.row.is_transport==true)"><span >yes</span></p>
+                        <p v-if="(scope.row.is_transport==0)||(scope.row.is_transport==false)"><span >no</span></p>
                         <el-switch
-                                style="margin:10px"
+                                style="margin:2px"
                                 v-model="scope.row.is_transport"
                                 active-color="#409EFF"
                                 inactive-color="#D8DCE5">
                         </el-switch>
                     </template>
                  </el-table-column>
+                 <el-table-column
+                     label="Pay"
+                     width="50">
+                 <template slot-scope="scope">
+                     <span v-if="scope.row.service_pay_date == null">No</span>
+                     <span v-else>{{scope.row.service_pay_date}}</span>
+                 </template>
+             </el-table-column>
               </el-table>
               <!--Supplement-->
               <div  v-if="(item.supplements != undefined) &&(item.supplements.length >0)" class="supplement-wrap">
@@ -193,7 +258,8 @@
         currency_type_str:'RUB',
         people_str:'31+1',
         nights:1,
-        is_quotes:1,
+        transport:true,
+        is_quotes:true,
         tour_records:[],
         items:[
             {day_index:1,day_title:'Moscow, 5 May Friday',
@@ -230,6 +296,15 @@
         ]
       }
     },
+//    computed: {
+//        calc_is_transport(value) {
+//            if (value == 1) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+//    },
     methods: {
         initParams() {
           this.nights     = this.$route.params.nights;
@@ -298,6 +373,18 @@
 
             }
         },
+        clickComment(row) {
+          //alert('click row.comment='+row.comment+'\n+is_comment='+row.is_comment+"\nn price:"+row.price+"\n\n is_transport:"+row.is_transport);
+          if (row.visible_comment == undefined) {
+              row.visible_comment=false;
+          }
+          row.visible_comment=!row.visible_comment;
+          this.$nextTick();
+        },
+        changeQuotes() {
+           console.log(this.is_quotes);
+           this.$nextTick();
+        },
         getCurrency() {
           return this.currency_type_str;
         },
@@ -311,7 +398,12 @@
         }
     },
     computed: {
-
+        calc_is_transport(value) {
+            if (value==1) {
+                return true;
+            }
+            return false;
+        }
     }
 }
 </script>
@@ -341,5 +433,24 @@
 
 .el-table .guide-row {
     background: #f0f9eb;
+}
+.my-service-comment {
+    width:100%;
+    display: inline-block;
+    font-size: small;
+    color: #4bb1b1;
+    height: 28px;
+}
+.my-input-price {
+    width: 80px;
+    background-color: #2e6da4;
+}
+.my-wrap-price {
+    width: 90px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.my-q-field {
+    color:#66b1ff;
 }
 </style>
