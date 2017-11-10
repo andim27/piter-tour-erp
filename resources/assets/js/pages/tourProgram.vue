@@ -6,12 +6,12 @@
         </router-link>
 
           <el-row>
-              <el-col :span="6">
+              <el-col :span="8">
                   <el-tooltip :content="'tour_id='+tour_id" placement="bottom" effect="light">
                     <h1>Dossie#({{dossier}})</h1>
                   </el-tooltip>
               </el-col>
-              <el-col :span="6" :offset="12">
+              <el-col :span="6" :offset="10">
                   <el-switch
                           @change="changeQuotes"
                           v-model="is_quotes"
@@ -24,10 +24,13 @@
 
       <div class="content">
         <div v-if="items.length >0"  v-for="(item,index) in items">
-           <h3>Day {{item.day_index}} of {{nights}}: {{item.day_title}}</h3>
-            <!--Services -->
+
+          <div  v-for="(day_city_service,city_index) in item['cities']">
+             <h3>Day {{item.day_index}} of {{nights+1}} City: {{day_city_service.city_name}}</h3>
+              <!--{{item.day_title}}-->
+            <!--b:Services -->
             <el-table
-                :data="item.services"
+                :data="day_city_service.services"
                 border
                 style="width: 100%">
                 <el-table-column
@@ -170,72 +173,98 @@
                  </template>
              </el-table-column>
               </el-table>
+            <!--e:Services -->
             <!--Supplement-->
-            <div  v-if="(item.supplements != undefined) &&(item.supplements.length >0)" class="supplement-wrap">
+            <!--v-if="(day_city_service.supplements != undefined) &&(day_city_service.supplements.length >0)"-->
+            <!--v-for="(day_city_supplement,supplement_index) in day_city_service.supplements"-->
+            <div  class="supplement-wrap"  >
+                <h3>Transport</h3>
+                <!--day_city_service.city_name-->
+                <!--:data="day_city_service.supplements"-->
+                <!--getSupplementItems(day_city_service.supplements,day_city_service.city_name)-->
+                <!--FILTER SUPPLEMENTS RECORDS BY CITY_NAME-->
+                <!--<div v-if="day_city_supplement.city_name==day_city_service.city_name">-->
                   <el-table
-                    :data="item.supplements"
-                    style="width: 100%"
-                    :show-header="true">
-                    <el-table-column
-                          label="Time from"
-                          width="100">
-                        <template slot-scope="scope">
-                            <el-time-select
-                                    placeholder="Start time"
-                                    v-model="scope.row.time_from"
-                                    size="mini"
-                                    style="width:100px"
-                                    :picker-options="{
+                          :data="day_city_service.supplements"
+                          style="width: 100%"
+                          :show-header="true">
+                      <el-table-column
+                              label="Time from"
+                              width="120">
+                          <template slot-scope="scope">
+                              <el-time-select
+                                      placeholder="Start time"
+                                      v-model="scope.row.service_time_from"
+                                      size="mini"
+                                      style="width:110px"
+                                      :picker-options="{
                                               start: '06:00',
                                               step: '00:15',
                                               end: '24:00'
                                             }">
-                            </el-time-select>
-
-                        </template>
+                              </el-time-select>
+                          </template>
                       </el-table-column>
                       <el-table-column
                               label="Time to"
-                              width="100">
+                              width="120">
                           <template slot-scope="scope">
                               <el-time-select
                                       placeholder="End time"
-                                      v-model="scope.row.time_to"
+                                      v-model="scope.row.service_time_to"
                                       size="mini"
-                                      style="width:100px"
+                                      style="width:110px"
                                       :picker-options="{
                                               start: '08:30',
                                               step: '00:15',
                                               end: '18:30',
-                                              minTime: scope.row.time_from
+                                              minTime: scope.row.service_time_from
                                             }">
                               </el-time-select>
                           </template>
                       </el-table-column>
 
-                        <el-table-column
-                          prop="service_name"
-                          label="Service name">
-                        </el-table-column>
-                        <el-table-column
-                          prop="service_hours"
-                          label="Hours"
-                          width="100">
-                        </el-table-column>
-                        <el-table-column
-                          prop="service_price"
-                          label="Price"
-                          width="100">
-                        </el-table-column>
-                        <el-table-column
-                          prop="service_sum"
-                          label="sum"
-                          width="100">
-                        </el-table-column>
+                      <el-table-column
+                              prop="service_type"
+                              label="Service type">
+                          <template slot-scope="scope">
+                              <strong>{{scope.row.city_name}}:</strong>{{scope.row.service_type}}
+                          </template>
+
+                      </el-table-column>
+                      <el-table-column
+                              prop="service_hours"
+                              label="Hours"
+                              width="100">
+                          <template slot-scope="scope">
+                              {{scope.row.service_hours}}
+                          </template>
+
+                      </el-table-column>
+                      <el-table-column
+                              prop="service_price"
+                              label="Price"
+                              width="100">
+                          <template slot-scope="scope">
+                             {{scope.row.service_price}}
+                          </template>
+                      </el-table-column>
+                      <el-table-column
+                              prop="service_sum"
+                              label="sum"
+                              width="100">
+                          <template slot-scope="scope">
+                              {{scope.row.service_sum}}
+                          </template>
+                      </el-table-column>
 
                   </el-table>
+                <!--</div>-->
               </div>
-        </div>
+
+          </div>
+
+               </div>
         <div v-else>
               <i class="el-icon-loading" style="display:inline-block"></i> <span>Waiting data...</span>
           </div>
@@ -273,7 +302,8 @@
                     {"city_name":"MSK","services":[
                         {time_from:'8-30',time_to:'9-30',city_name:'MSK',service_name:'Arrival/Depature: Arriving at the airport',comment:'test-1',q_hours:0,q_price:0.00,q_sum:0.00,is_transport:false},
                         {time_from:'8-30',time_to:'9-30',city_name:'MSK',service_name:'Transfer: Transfer from the Airport',comment:'test-2',is_transport:false}
-                        ]
+                        ],
+                        "supplements":[{service_type:'transport',city_name:'MSK',service_hours:4,service_price:100,service_sum:400}]
                     }
                 ]
             },
@@ -282,13 +312,15 @@
                     {time_from:'9-00',time_to:'9-30',city_name:'MSK',service_name:'Meal: Breakfast at the hotel',qty:1,q_hours:0,q_price:0.00,q_sum:0.00,is_transport:false},
                     {time_from:'9-30',time_to:'11-30',city_name:'MSK',service_name:'Excursion: City tour',qty:1,q_hours:0,q_price:0.00,q_sum:0.00,is_transport:true}
 
-                    ]
+                    ],
+                    "supplements":[{service_type:'transport',city_name:'MSK',service_hours:8,service_price:100,service_sum:800}]
                 },
                 {"city_name":"SPB","services":[
                     {time_from:'10-00',time_to:'10-30',city_name:'SPB',service_name:'Meal: Breakfast at the hotel',qty:1,q_hours:0,q_price:0.00,q_sum:0.00,is_transport:false},
                     {time_from:'10-30',time_to:'11-30',city_name:'SPB',service_name:'Excursion: City tour',qty:1,q_hours:0,q_price:0.00,q_sum:0.00,is_transport:true}
 
-                ]
+                    ],
+                    "supplements":[{service_type:'transport',city_name:'SPB',service_hours:2,service_price:100,service_sum:200}]
                 }
             ]}
         ],
@@ -386,6 +418,15 @@
                 });
 
             }
+        },
+        getSupplementItems(all_supplements,city_name) {
+            var res=[];
+            for (let i=0;i<all_supplements.length;i++) {
+                if (all_supplements[i].city_name==city_name) {
+                    res.push(all_supplements[i]);
+                }
+            }
+            return res;
         },
         correctItems() {
             if (this.items.length ==0) {

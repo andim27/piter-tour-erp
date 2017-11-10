@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tours;
 
 use App\Tour;
 use App\TourProgram;
+use App\TourSupplement;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -162,6 +163,7 @@ class TourController extends Controller
             //$tour_days=$days_collect->count();
             $records=TourProgram::where('tour_id','=',$tour_id)->orderBy('day_index')->selectRaw("*")->get();
             $days_tour_arr=TourProgram::where('tour_id','=',$tour_id)->orderBy('day_index')->selectRaw("DISTINCT day_index,options")->get()->toArray();
+            $tour_supplements=TourSupplement::where('tour_id','=',$tour_id)->orderBy('day_index')->selectRaw("*")->get();
             $cur_day_index=0;
             foreach($days_tour_arr as $day) {
                 $options=json_decode($day['options']);
@@ -176,16 +178,18 @@ class TourController extends Controller
                     $city_services   =$services->groupBy('city_name');
                     $services->concat(['visible_comment' => false]);
                     //--set is_transport to true/false for UI component
-                    $city_grouped = $city_services->mapToGroups(function ($item, $key) {
-                        //return [$item['city_name'] => $item['cities']];
-                        return [['city_name'=>$key,'services'=>$item]];
+                    $city_day_supplement=$tour_supplements->where('day_index',$day['day_index']);
+                    $city_grouped = $city_services->mapToGroups(function ($item, $key) use($city_day_supplement) {
+                        $city_day_supplement=$city_day_supplement->where('city_name',$key);
+                        Log::info('\n\n'.$key.' supplements:'.$city_day_supplement);
+                        return [['city_name'=>$key,'services'=>$item,'supplements'=>$city_day_supplement]];
                     });
                     //$services->all();
                     //$city_services->all();
-                    //Log::info('Day_index:  '.$day['day_index'].' Cities:'.$city_services->toJson());
+
                     Log::info('\n\nGrouped Day_index:  '.$day['day_index'].' Cities grouped:'.$city_grouped[0]->toJson());
-                    Log::info('\n\nGrouped Count:  '.$city_grouped[0]->count());
-                    //Log::info('Day_index:  '.$day['day_index'].' Services:'.$services->toJson());
+
+
                     $cur_day_index = $day['day_index'];
                 //}
 
