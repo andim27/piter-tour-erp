@@ -73,8 +73,9 @@ class TourController extends Controller
                     $tour_dates = $result['data']['quotation']['dates'];
                     $ext_d='';
                     //$req_work_date =date(Y-m-d h:i:s, strtotime($yourDate));
-                    $req_work_date =date('Y-m-d', strtotime($request['work_date']));
-                    $tour_date_from =@$result['data']['quotation']['dates'][0]['dateFrom'];
+                    $req_work_date  = date('Y-m-d', strtotime($request['work_date']));
+                    $tour_date_from = @$result['data']['quotation']['dates'][0]['dateFrom'];
+                    $people         = @$result['data']['quotation']['groups'][0]['people'];
                     for ($i=0;$i<count($tour_dates);$i++) {
                         $ext_d=$ext_d.($i==0?'':', ').$tour_dates[$i]['dateFrom'];
                         if ($tour_dates[$i]['dateFrom'] == $req_work_date ) {
@@ -93,14 +94,14 @@ class TourController extends Controller
                     $tour_programm_action='create';
                     if (empty($tour)) {
                         $tour=new Tour();
-                        $tour_programm_action='update';
+                        //$tour_programm_action='update';
                     }
                     //--update if exist ext quotation
                     $tour->ext_q_id=$result['data']['quotation']['id'];
                     $tour->dossier=$request['dossier'];
                     $tour->tour_name=@$result['data']['quotation']['name'];
                     $tour->client_name=@$result['data']['quotation']['clientName'];
-                    $tour->people=@$result['data']['quotation']['groups'][0]['people'];
+                    $tour->people=$people;//@$result['data']['quotation']['groups'][0]['people'];
                     $tour->cities_str=@$result['data']['quotation']['citiesStr'];
                     $tour->nights=@$result['data']['quotation']['nights'];
                     $tour->sales_user_name=@$result['data']['quotation']['user']['username'];
@@ -125,7 +126,9 @@ class TourController extends Controller
                     $tour->save();
                     //return $tour_date_from;
                     //---SAVE tour programs from external sourse
-                    $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program'],$tour_programm_action,$tour_date_from);
+                    $params=['action'=>$tour_programm_action,'tour_date_from'=>$tour_date_from,'people'=>$people];
+
+                    $res=TourProgram::saveFromExt($tour->id,$result['data']['quotation']['program'],$params);
                     if ($res != true) {
                         $out_res=['errors'=>['program'=>['0'=>'Tour program error:']],'message'=>'Tour program save error'];
                         return response()->json($out_res)->setStatusCode(422, 'Tour program save error!');;
@@ -169,16 +172,25 @@ class TourController extends Controller
                 }
                 //if ($day['day_index'] != $cur_day_index) {
                     //$services=[];
-                    $services=$records->where('day_index',$day['day_index']);
+                    $services =$records->where('day_index',$day['day_index']);
+                    $city_services   =$services->groupBy('city_name');
                     $services->concat(['visible_comment' => false]);
                     //--set is_transport to true/false for UI component
-
-                    $services->all();
+                    $city_grouped = $city_services->mapToGroups(function ($item, $key) {
+                        //return [$item['city_name'] => $item['cities']];
+                        return [['city_name'=>$key,'services'=>$item]];
+                    });
+                    //$services->all();
+                    //$city_services->all();
+                    //Log::info('Day_index:  '.$day['day_index'].' Cities:'.$city_services->toJson());
+                    Log::info('\n\nGrouped Day_index:  '.$day['day_index'].' Cities grouped:'.$city_grouped[0]->toJson());
+                    Log::info('\n\nGrouped Count:  '.$city_grouped[0]->count());
+                    //Log::info('Day_index:  '.$day['day_index'].' Services:'.$services->toJson());
                     $cur_day_index = $day['day_index'];
                 //}
 
                 $supplements=[];//{service_name:'transport',service_hours:8,service_price:120,service_sum:960,is_transport:true}
-                array_push($tour_program_arr,['day_index'=>$day['day_index'],'day_title'=>$day_title,'services'=>$services,'supplements'=>$supplements]);
+                array_push($tour_program_arr,['day_index'=>$day['day_index'],'day_title'=>$day_title,'cities'=>$city_grouped[0],'services'=>$services,'supplements'=>$supplements]);
             }
 
             //$all_days
@@ -187,6 +199,29 @@ class TourController extends Controller
         } catch (Exeption $e) {
             return ['error'=>$e->getMessage(),'error_description'=>'error line:'.$e->getLine()];
         }
+    }
+
+    public function saveComment(Request $request)
+    {
+        $this->validate($request, [
+            'program_id' => 'required',
+            'comment' => 'required',
+        ]);
+        try {
+            $program_id=$request['program_id'];
+            $comment=$request['comment'];
+            $tp=TourProgram::where(['id'=>$program_id])->first();
+            if ($tp) {
+                $tp->comment=$comment;
+                $tp->save();
+                return ['success'=>'ok','data'=>['program_id'=>$program_id]];
+            }
+
+        } catch (Exeption $e) {
+            Log::error('SaveComment:'.$e->getMessage().' line:'.$e->getLine().' code:'.$e->getCode());
+            return ['error'=>$e->getMessage(),'error_description'=>'error line:'.$e->getLine()];
+        }
+        return;
     }
     /**
      * Show the form for creating a new resource.

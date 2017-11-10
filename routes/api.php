@@ -36,6 +36,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/tours','Tours\TourController@index');
     Route::post('/tours/create-q','Tours\TourController@createByQuotation');
     Route::post('/tours/program','Tours\TourController@getProgram');
+    Route::post('/tours/program/save-comment','Tours\TourController@saveComment');
 });
 //Route::resource('api/tours', 'Tours\TourController');
 
