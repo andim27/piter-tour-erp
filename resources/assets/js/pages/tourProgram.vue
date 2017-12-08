@@ -23,7 +23,7 @@
 
 
       <div class="content">
-        <div v-if="items.length >0"  v-for="(item,index) in items">
+        <div v-if="items.length >0"  v-for="(item,items_index) in items">
 
           <div  v-for="(day_city_service,city_index) in item['cities']">
              <h3>Day {{item.day_index}} of {{nights+1}} City: {{day_city_service.city_name}}</h3>
@@ -41,6 +41,7 @@
                     <template slot-scope="scope">
                         <el-time-select
                                 v-model="scope.row.time_from"
+                                :change="changeTourTime('time_from',items_index,item.day_index,city_index,day_city_service.city_name)"
                                 size="small"
                                 style="width:100px"
                                 :picker-options="{
@@ -60,6 +61,7 @@
                     <template slot-scope="scope">
                         <el-time-select
                                 v-model="scope.row.time_to"
+                                :change="changeTourTime('time_to',items_index,item.day_index,city_index,day_city_service.city_name)"
                                 size="small"
                                 style="width:100px"
                                 :picker-options="{
@@ -257,7 +259,15 @@
                               {{scope.row.service_sum}}
                           </template>
                       </el-table-column>
-
+                      <el-table-column
+                              prop="actions"
+                              label="actions"
+                              width="180">
+                          <template slot-scope="scope">
+                              <el-button round size="small" @click="calcTransport(items_index,city_index)">Calc</el-button>
+                              <el-button round size="small" type="primary" @click="bookTransport(item.day_index,day_city_service.city_name);">To book</el-button>
+                          </template>
+                      </el-table-column>
                   </el-table>
                 <!--</div>-->
               </div>
@@ -274,6 +284,7 @@
 </template>
 
 <script >
+  var moment = require('moment');
   import axios from 'axios'
   export default  {
     name: 'tour-program',
@@ -303,7 +314,7 @@
                         {time_from:'8-30',time_to:'9-30',city_name:'MSK',service_name:'Arrival/Depature: Arriving at the airport',comment:'test-1',q_hours:0,q_price:0.00,q_sum:0.00,is_transport:false},
                         {time_from:'8-30',time_to:'9-30',city_name:'MSK',service_name:'Transfer: Transfer from the Airport',comment:'test-2',is_transport:false}
                         ],
-                        "supplements":[{service_type:'transport',city_name:'MSK',service_hours:4,service_price:100,service_sum:400}]
+                        "supplements":[{service_type:'transport',city_name:'MSK',service_time_from:'8:00',service_hours:4,service_price:100,service_sum:400}]
                     }
                 ]
             },
@@ -418,6 +429,71 @@
                 });
 
             }
+        },
+        bookTransport(day_index,city_name) {
+            console.log(day_index,city_name);
+        },
+        calcTransport(items_index,city_index) {
+            var services   =this.items[items_index].cities[city_index].services;
+            var supplements=this.items[items_index].cities[city_index].supplements;
+            var supplement;
+            console.log('supplements[0]:',supplements[0]);
+            if (supplements[0] ==undefined) {
+                supplement=supplements;
+            } else {
+                supplement=supplements[0];
+            }
+            console.log('items_index='+items_index+' city_index:'+city_index);
+            console.log('supplement:',supplement);
+
+            supplement.service_sum= String(parseFloat(supplement.service_price) * parseFloat(supplement.service_hours));
+        },
+        changeTourTime(time_field_name,items_index,day_index,city_index,city_name) {
+            var services   =this.items[items_index].cities[city_index].services;
+            var supplements=this.items[items_index].cities[city_index].supplements;
+            var supplement;
+            if (supplements[0] ==undefined) {
+                supplement=supplements;
+            } else {
+                supplement=supplements[0];
+            }
+            var day_city_time_sum=0;
+            var service_time=0;
+            var t1=[];
+            var t2=[];
+            for (let i=0;i<services.length;i++) {
+                if ((services[i].time_from != undefined)) {
+                    t1=services[i].time_from.split(':');
+                    var t_from=moment().hours(t1[0]).minute(t1[1]);
+                    if (supplement.service_time_from == undefined) {
+                        supplement.service_time_from = services[i].time_from;
+                    } else { //--- set to minimum ---
+                        //console.log('supplements[0].service_time_from:'+supplements[0].service_time_from);
+                        t2=supplement.service_time_from.split(':');
+                        var t_start =moment().hours(t2[0]).minute(t2[1]);
+                        if (t_from.diff(t_start) <0) {
+                            supplement.service_time_from = services[i].time_from;
+                        }
+                    }
+                }
+                if ((services[i].time_to != undefined)) {
+                    t1=services[i].time_to.split(':');
+                    var t_to=moment().hours(t1[0]).minute(t1[1]);
+                    if (supplement.service_time_to == undefined) {
+                        supplement.service_time_to = services[i].time_to;
+                    } else { //--- set to minimum ---
+                        //console.log('supplements[0].service_time_to:'+supplements[0].service_time_to);
+                        t2=supplement.service_time_to.split(':');
+                        var t_start =moment().hours(t2[0]).minute(t2[1]);
+                        if (t_to.diff(t_start) >0) {
+                            supplement.service_time_to = services[i].time_to;
+                        }
+                    }
+                }
+
+            }
+
+            console.log('Time sum:'+day_city_time_sum);
         },
         getSupplementItems(all_supplements,city_name) {
             var res=[];

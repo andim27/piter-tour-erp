@@ -179,22 +179,22 @@ class TourController extends Controller
                     $services->concat(['visible_comment' => false]);
                     //--set is_transport to true/false for UI component
                     $city_day_supplement=$tour_supplements->where('day_index',$day['day_index']);
-                    $city_grouped = $city_services->mapToGroups(function ($item, $key) use($city_day_supplement) {
+                    $city_grouped = $city_services->mapToGroups(function ($item, $key) use($city_day_supplement,$day) {
                         $city_day_supplement=$city_day_supplement->where('city_name',$key);
-                        Log::info('\n\n'.$key.' supplements:'.$city_day_supplement);
+                        Log::info('\n\n'.$key.' day_index='.$day['day_index'].' supplements count:'.$city_day_supplement->count());
                         return [['city_name'=>$key,'services'=>$item,'supplements'=>$city_day_supplement]];
                     });
-                    //$services->all();
-                    //$city_services->all();
 
-                    Log::info('\n\nGrouped Day_index:  '.$day['day_index'].' Cities grouped:'.$city_grouped[0]->toJson());
+
+                    //Log::info('\n\nGrouped Day_index:  '.$day['day_index'].' Cities grouped:'.$city_grouped[0]->toJson());
 
 
                     $cur_day_index = $day['day_index'];
                 //}
 
                 $supplements=[];//{service_name:'transport',service_hours:8,service_price:120,service_sum:960,is_transport:true}
-                array_push($tour_program_arr,['day_index'=>$day['day_index'],'day_title'=>$day_title,'cities'=>$city_grouped[0],'services'=>$services,'supplements'=>$supplements]);
+                //array_push($tour_program_arr,['day_index'=>$day['day_index'],'day_title'=>$day_title,'cities'=>$city_grouped[0],'services'=>$services,'supplements'=>$supplements]);
+                array_push($tour_program_arr,['day_index'=>$day['day_index'],'day_title'=>$day_title,'cities'=>$city_grouped[0]]);
             }
 
             //$all_days
