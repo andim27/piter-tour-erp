@@ -40,7 +40,7 @@ class GetBirixUserPhoto extends Command
         //
         $users=User::all();
         $users->map(function($item,$key) {
-
+            $res=0;
             $extension = \File::extension($item->photo);
             $part_name_arr=explode('/',$item->photo);
             $file_name=$part_name_arr[count( $part_name_arr)-1];
@@ -51,9 +51,13 @@ class GetBirixUserPhoto extends Command
                 {
                     $file_name=$item->id+'_'.$file_name;
                 }
-                \Storage::put('bitrix/users/avatar/'.$file_name, file_get_contents($item->photo));
+                try {
+                    \Storage::put('bitrix/users/avatar/'.$file_name, file_get_contents($item->photo));
+                    $res=\DB::update('update users set avatar = ? where id = ?', [$file_name,$item->id]);
+                } catch (\Exception $e) {
+                    $this->info( 'ERROR:'.$item->photo);
+                }
 
-                $res=\DB::update('update users set avatar = ? where id = ?', [$file_name,$item->id]);
 
                 $this->info( $item->photo.' res='.$res);
 
